@@ -1,0 +1,33 @@
+<saml2:Assertion xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion" xmlns:S="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:ns2="http://docs.oasis-open.org/ws-sx/ws-trust/200512" xmlns:ns4="http://www.w3.org/2005/08/addressing" xmlns:ns5="http://docs.oasis-open.org/ws-sx/ws-trust/200802" xmlns:ns8="http://www.rsa.com/names/2009/01/std-ext/WS-Trust1.3/Claims" xmlns:rsa="http://www.rsa.com/names/2009/12/std-ext/WS-Trust1.4/advice" xmlns:wsp="http://schemas.xmlsoap.org/ws/2004/09/policy" xmlns:wsse="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ID="_df65b3c0-d98f-49b2-a9eb-dbe49114dd8e" IssueInstant="2000-01-01T00:00:00Z" Version="2.0"><saml2:Issuer Format="urn:oasis:names:tc:SAML:2.0:nameid-format:entity">https://10.23.65.89:7444/STS</saml2:Issuer><ds:Signature><ds:SignedInfo><ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/><ds:SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/><ds:Reference URI="#_df65b3c0-d98f-49b2-a9eb-dbe49114dd8e"><ds:Transforms><ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/><ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"><InclusiveNamespaces xmlns="http://www.w3.org/2001/10/xml-exc-c14n#" PrefixList="xsi"/></ds:Transform></ds:Transforms><ds:DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/><ds:DigestValue>xl3DMs3VNP+Oq3HHFbbLtLEfMyvfjfBo2wi4pOAW2hc=</ds:DigestValue></ds:Reference></ds:SignedInfo><ds:SignatureValue>dk/Rx12KbtTeCL02FWcectHN/Fho9SotBJIzMsdrEk4wJb7Lw6qAx1Nq5aHMOUS3IdleiMbVz+6n
+sWTk355RxOJU1Uo/5JuI98zeE2AqOmESnq2mzBM34klzVf182xmrcJBZNP6ZxAHDkLWguexsJPxN
+v4ro0nIlqqH8XrMkycHJGLLF1tH9d6dAGudUaJSj2OHazTvTLGRZ8Y+9pb/E+OTw1Izv7inXFyAP
+7bJpjvq7XHulUz32row2TKofc3ccTRCyjMMaNv0GLDgz4NUlmEeh89bi0xo4TvylD0tDrJa1H1C6
+BCvNsoBibO4J6s6uOh3x32hCCxnv77SdaCBNEg==</ds:SignatureValue><ds:KeyInfo><ds:X509Data><ds:X509Certificate>MIICxTCCAa2gAwIBAgIJAJUp5PL85KkvMA0GCSqGSIb3DQEBCwUAMCExHzAdBgNVBAMTFlNlY3Vy
+aXR5IFRva2VuIFNlcnZpY2UwIBcNMDAwMTAxMDAwMDAwWhgPMjEwMDAxMDEwMDAwMDBaMCExHzAd
+BgNVBAMTFlNlY3VyaXR5IFRva2VuIFNlcnZpY2UwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEK
+AoIBAQDKkJWxTU2BOqfCeRtof175gmXF4ZenJJMZ2JJEGIi9MFahLJ5BtOlm7orhnFtR94hCkKf6
+L6G6w6DyAkeRc+zPDxPKHAE+8m+Qgo0xMA9MOBqHrDhkEF2L8eYbAoFaNh3SU1goLzdlurroDzuA
+1f+KG1qR47ZROhhpex/YKk7MWuXBXvQy8yfU3G9beIK/n0GDhJMeZt2H8bSHbFLgqgO7zTdTh2Yn
+lo68Rgxc8gBAb7wEdpTRmrecI4xpp6vNEIo7k5tUaVW/GgIDgWqTsaSYcBlq7b4bNFr1S86cNfVG
+GI+CEcc3ExdxZ+3UoFZf5w0qmxo10aFhC9lLj1jus1uNAgMBAAEwDQYJKoZIhvcNAQELBQADggEB
+ACTAemK5IeK5eUXjj5UjIpFPv7dRGt/PwdFAqUjbIHxbRvzAKUFu/SIDiO+LzbXMBnr5/xlvFLul
+/pWme0KTMyyJ/j2TYGCwjLm7GSAXyzjMYJ9UVQjoSMIDo5hShr4JHgXkMEHRMpdSPdytOvjiyV6O
+In0e72E45DS7W6UEEreNUxFHnJg2M+uzq2vtYfMdLUjKEMq+d7wtMsVT5/tVDVubVN3PB2/ky4pO
+GkdvqkuU1r7w1XpIxZ5SMHi8Isq5nX0vWWY2RZTNcKStUPMScBwEDbEtv5jrpTMkyzCJEFJKV7JI
+jUD2Zt6sVPQJjCJ6DeFsKRM+rGZ58AXZ57iMVyQ=</ds:X509Certificate></ds:X509Data></ds:KeyInfo></ds:Signature><saml2:Subject><saml2:NameID Format="http://schemas.xmlsoap.org/claims/UPN">root@localos</saml2:NameID><saml2:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:holder-of-key"><saml2:SubjectConfirmationData xsi:type="saml2:KeyInfoConfirmationDataType"><ds:KeyInfo><ds:X509Data><ds:X509Certificate>MIIDGTCCAgGgAwIBAgIJALQcILHWKPOHMA0GCSqGSIb3DQEBCwUAMD0xDjAMBgNV
+BAMTBVVzZXIxMRYwFAYKCZImiZPyLGQBGRYGdm13YXJlMRMwEQYKCZImiZPyLGQB
+GRYDY29tMCAXDTAwMDEwMTAwMDAwMFoYDzIwOTkxMjA3MDAwMDAwWjA9MQ4wDAYD
+VQQDEwVVc2VyMTEWMBQGCgmSJomT8ixkARkWBnZtd2FyZTETMBEGCgmSJomT8ixk
+ARkWA2NvbTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAM3uoJMjO+cH
+3zlMg0SInvpRUcuV2BgpaDKoJvvw6yDjactGsievZOkDOTKJnk+qWyKC0xJTW3LU
+fnHAbWPASlN/P55XaAhjsNOPMshDHlIRE4MpCiXgaOv7mei2ZlmxxaIqG/74pktO
+AEsYjhZmzG4ssC2z4BBMO/QGQJB2qZEc+le48/rvcq8jAH94PzdSHhR84yQq4KI0
+ZuFX+nkn1A5cX8HCTBWLhLw5qZsZgGAHVNpKAw57YESCYiTAg7EXFFJth9cAAs61
+FuGsFOkAu+zFMLctT7BNTedmcCb9nJZuEYDbEEGEupWZpXO58ETkb4USGC+nvIMg
+ZSK8zV5TvPsCAwEAAaMaMBgwCQYDVR0TBAIwADALBgNVHQ8EBAMCBeAwDQYJKoZI
+hvcNAQELBQADggEBAB9fl8JpyAE5MggKGhC+OKo5p9u7QJcIHlZ9tqcl1/j3w+jq
+IKMr/uZegyLMbGw5GVHgyq046oc5i4RMkdUPXQuxTfp3/U3LtJnPbXBHH/aJlTrL
+XuMEIN7MDGwx9f5oEmlGdWxlWoDG3v41iSnWCJWyxD3Mi33/oai9EYQfTZa/m2HJ
+7zeLg4YKCfeeGVYIUfMp2m6eJ5AplxIIYFMp4dIHC8Mki7wF8mfLVrTHQCAVSuph
+85YokIy0OGkLUEVj8ym9WjRPmTCoLYG4uxSLcWlhJYyFe0GF8ElOqCgfDwkYqm+d
++As0UML4WJDjr92HVEaiveSVamqV4OZu22khS70=</ds:X509Certificate></ds:X509Data></ds:KeyInfo></saml2:SubjectConfirmationData></saml2:SubjectConfirmation></saml2:Subject><saml2:Conditions NotBefore="2000-01-01T00:00:00Z" NotOnOrAfter="2030-01-01T00:00:00Z"/><saml2:AuthnStatement AuthnInstant="2000-01-01T00:00:00Z"><saml2:AuthnContext><saml2:AuthnContextClassRef>urn:oasis:names:tc:SAML:2.0:ac:classes:PasswordProtectedTransport</saml2:AuthnContextClassRef></saml2:AuthnContext></saml2:AuthnStatement><saml2:AttributeStatement><saml2:Attribute FriendlyName="Subject Type" Name="http://rsa.com/schemas/attr-names/2009/01/SubjectType" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"><saml2:AttributeValue xsi:type="xs:anyURI">http://www.rsa.com/names/2009/12/std-ext/SAML2.0/subjects/user</saml2:AttributeValue></saml2:Attribute><saml2:Attribute FriendlyName="Group" Name="http://rsa.com/schemas/attr-names/2009/01/GroupIdentity" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"><saml2:AttributeValue xsi:type="xs:string">localos\vami</saml2:AttributeValue><saml2:AttributeValue xsi:type="xs:string">System-Domain\__LookupServiceAdministrators__</saml2:AttributeValue><saml2:AttributeValue xsi:type="xs:string">System-Domain\__Administrators__</saml2:AttributeValue><saml2:AttributeValue xsi:type="xs:string">localos\coredump</saml2:AttributeValue><saml2:AttributeValue xsi:type="xs:string">localos\root</saml2:AttributeValue><saml2:AttributeValue xsi:type="xs:string">localos\shellaccess</saml2:AttributeValue></saml2:Attribute><saml2:Attribute FriendlyName="First Name" Name="http://schemas.xmlsoap.org/ws/2005/05/identity/claims/givenname" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"><saml2:AttributeValue xsi:type="xs:string">root</saml2:AttributeValue></saml2:Attribute><saml2:Attribute FriendlyName="isSolution" Name="http://vmware.com/schemas/attr-names/2011/07/isSolution" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri"><saml2:AttributeValue xsi:type="xs:string">false</saml2:AttributeValue></saml2:Attribute></saml2:AttributeStatement></saml2:Assertion>

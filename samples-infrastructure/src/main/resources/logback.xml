@@ -1,0 +1,62 @@
+<configuration>
+    <!-- The following logback configuration is used across all *-samples projects! -->
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %-5level - [%thread] %logger{36}: %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="DEBUG">
+        <appender-ref ref="STDOUT" />
+    </root>
+
+    <!-- These loggers are turned off because they do not provide useful information for the common use cases. -->
+    <logger name="jdk.internal.httpclient" level="OFF" />
+    <logger name="javax.activation" level="OFF" />
+    <logger name="jakarta.activation" level="OFF" />
+    <logger name="angus.activation" level="OFF" />
+    <logger name="jakarta.xml" level="OFF" />
+    <logger name="com.sun.metro.assembler" level="OFF" />
+    <logger name="com.sun.xml" level="OFF" />
+    <logger name="com.sun.org.apache" level="OFF" />
+    <logger name="org.jcp.xml" level="OFF" />
+    <logger name="org.glassfish.jaxb" level="OFF" />
+    <logger name="jdk.event.security" level="OFF" />
+    <logger name="org.apache.http.client.protocol" level="OFF" />
+    <logger name="org.apache.http.impl.conn" level="OFF" />
+    <logger name="org.apache.http.impl.execchain" level="OFF" />
+    <logger name="org.apache.cxf.phase.PhaseInterceptorChain" level="OFF" />
+    <logger name="org.apache.cxf.ws" level="OFF" />
+    <logger name="org.apache.cxf.jaxws" level="OFF" />
+    <logger name="org.apache.cxf.transport" level="OFF" />
+    <logger name="org.apache.cxf.endpoint" level="OFF" />
+    <logger name="org.apache.cxf.common" level="OFF" />
+    <logger name="org.apache.cxf.wsdl11" level="OFF" />
+    <logger name="org.apache.cxf.jaxb.JAXBDataBinding" level="OFF" />
+    <logger name="org.apache.cxf.resource.DefaultResourceManager" level="OFF" />
+    <logger name="org.apache.cxf.jaxws.handler.HandlerChainInvoker" level="OFF" />
+    <logger name="org.apache.cxf.wsdl.service.factory.ReflectionServiceFactoryBean" level="OFF" />
+    <logger name="com.vmware.vsan.sdk.VsanhealthService" level="OFF" />
+
+    <!-- To log the whole Apache CXF HTTP request and response (headers and bodies), set the level to INFO.-->
+    <logger name="org.apache.cxf.services" level="OFF" />
+
+    <!-- To log the whole vAPI HTTP request and response (headers and bodies), set the level to DEBUG.-->
+    <logger name="org.apache.http.wire" level="OFF" />
+
+    <!-- To log the vAPI HTTP request and response headers, set the level to DEBUG.-->
+    <logger name="org.apache.http.headers" level="OFF" />
+
+    <!-- To log TLS-related information regarding the vAPI bindings, set the level to DEBUG.-->
+    <logger name="org.apache.http.conn.ssl.SSLConnectionSocketFactory" level="OFF" />
+
+    <!-- Suppress opentelemetry warning about a missing optional dependency. -->
+    <logger name="com.vmware.vapi.internal" level="OFF" />
+
+    <!-- These loggers can be turned on as reminder that one or more TLS connections are insecure. -->
+    <logger name="com.vmware.vapi.internal.protocol.client.rpc.http.TrustAllX509TrustManager" level="OFF" />
+    <logger name="com.vmware.vapi.internal.protocol.client.rpc.http.AllowAllHostnameVerifier" level="OFF" />
+    <logger name="com.vmware.sdk.utils.ssl.InsecureHostnameVerifier" level="OFF" />
+    <logger name="com.vmware.sdk.utils.ssl.InsecureTrustManager" level="OFF" />
+</configuration>

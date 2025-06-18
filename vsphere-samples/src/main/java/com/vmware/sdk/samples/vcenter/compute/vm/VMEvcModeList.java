@@ -1,0 +1,62 @@
+/*
+ * ******************************************************************
+ * Copyright (c) 2025 Broadcom. All Rights Reserved.
+ * The term "Broadcom" refers to Broadcom Inc.
+ * and/or its subsidiaries.
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ * ******************************************************************
+ */
+
+package com.vmware.sdk.samples.vcenter.compute.vm;
+
+import static com.vmware.sdk.samples.utils.ssl.SecurityHelper.loadKeystoreOrCreateEmpty;
+import static com.vmware.sdk.vsphere.utils.VimClient.getVimServiceInstanceRef;
+
+import java.util.List;
+
+import com.vmware.sdk.samples.utils.SampleCommandLineParser;
+import com.vmware.sdk.vsphere.utils.PropertyCollectorHelper;
+import com.vmware.sdk.vsphere.utils.VcenterClient;
+import com.vmware.sdk.vsphere.utils.VcenterClientFactory;
+import com.vmware.vim25.Capability;
+import com.vmware.vim25.EVCMode;
+import com.vmware.vim25.ServiceContent;
+import com.vmware.vim25.VimPortType;
+
+/** This sample lists the EVC Mode keys that vCenter Server supports. */
+public class VMEvcModeList {
+    /** REQUIRED: vCenter FQDN or IP address. */
+    public static String serverAddress = "vcenter1.mycompany.com";
+    /** REQUIRED: Username to log in to the vCenter Server. */
+    public static String username = "username";
+    /** REQUIRED: Password to log in to the vCenter Server. */
+    public static String password = "password";
+    /**
+     * OPTIONAL: Absolute path to the file containing the trusted server certificates for establishing TLS connections.
+     * Leave empty or null to disable SSL verifications (do not leave it empty on production environments).
+     */
+    public static String trustStorePath = null;
+
+    public static void main(String[] args) throws Exception {
+        SampleCommandLineParser.load(VMEvcModeList.class, args);
+
+        VcenterClientFactory factory =
+                new VcenterClientFactory(serverAddress, loadKeystoreOrCreateEmpty(trustStorePath));
+
+        try (VcenterClient client = factory.createClient(username, password, null)) {
+            VimPortType vimPort = client.getVimPort();
+            ServiceContent serviceContent = client.getVimServiceContent();
+            PropertyCollectorHelper propertyCollectorHelper = new PropertyCollectorHelper(vimPort, serviceContent);
+
+            Capability cap = propertyCollectorHelper.fetch(getVimServiceInstanceRef(), "capability");
+
+            List<EVCMode> evcModes = cap.getSupportedEVCMode();
+            System.out.println("EVC modes");
+            System.out.println("---------");
+            for (EVCMode mode : evcModes) {
+                System.out.println(mode.getKey());
+            }
+        }
+    }
+}
