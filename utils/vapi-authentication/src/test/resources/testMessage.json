@@ -1,0 +1,37 @@
+{
+   "jsonrpc":"2.0",
+   "id":103,
+   "result":{
+      "type":"LIST",
+      "value":[
+         {
+            "type":"STRING",
+            "value":"four"
+         },
+         {
+            "type":"STRING",
+            "alue":"one"
+         },
+		 [
+		    "first",
+		    {
+			   "test":"1",
+			   "hello":"2"
+			}
+		 ],
+         {
+            "type":"STRING",
+            "value":"three"
+         },
+         {
+            "type":"STRING",
+            "value":"two"
+         },
+		 "five"
+      ]
+   },
+   "ctx":{
+      "appCtx": {},
+      "securityCtx": {}
+   }
+}
