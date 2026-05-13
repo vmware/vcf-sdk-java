@@ -11,7 +11,7 @@ This directory contains below samples for inventory APIs:
 ### Running the samples:
 
     #For example, you can use the following command to run transition on a group of clusters
-    ./gradlew :vsphere-samples:run -Pexample=com.vmware.sdk.samples.vcenter.management.vlcm.inventory.bulktransition.BulkExtractTransition --args='--serverAddress "<vcenter_ip>" --username "<user>" --password "<password>" --entityType "CLUSTER" --entities "domain-c11,domain-c13"' -I ../../init-dev.gradle.kts build
+    ./mvnw compile exec:java -Dexec.mainClass="com.vmware.sdk.samples.vcenter.management.vlcm.inventory.bulktransition.BulkExtractTransition" -Dexec.args='--serverAddress "<vcenter_ip>" --username "<user>" --password "<password>" --entityType "CLUSTER" --entities "domain-c11,domain-c13"'
 
 ### Testbed Requirement:
 

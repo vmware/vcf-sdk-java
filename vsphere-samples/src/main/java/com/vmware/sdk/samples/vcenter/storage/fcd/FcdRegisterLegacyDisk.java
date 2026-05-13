@@ -65,7 +65,7 @@ public class FcdRegisterLegacyDisk {
 
             // Register the disk as FirstClassDisk.
             log.info("Operation: Register a legacy disk as FCD with disk Path :: {}", legacyDiskPathForVc);
-            VStorageObject registeredVStrObj = vimPort.registerDisk(vStrObjManagerMoRef, legacyDiskPathForVc, fcdName);
+            VStorageObject registeredVStrObj = vimPort.registerDisk(vStrObjManagerMoRef, legacyDiskPathForVc, fcdName, null);
 
             log.info(
                     "Success: Registered Disk(now a vStorageObject) : [Uuid = {} ] with Name [ {} ]\n",

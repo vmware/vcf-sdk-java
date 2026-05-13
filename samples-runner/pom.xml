@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (c) 2025 Broadcom. All Rights Reserved.
+The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
+
+SPDX-License-Identifier: Apache-2.0 -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.vmware.sdk</groupId>
+        <artifactId>vcf-java-sdk-samples</artifactId>
+        <version>9.1.0.0</version>
+    </parent>
+
+    <artifactId>samples-runner</artifactId>
+
+    <dependencies>
+        <dependency>
+           <groupId>${vcf.sdk.groupId}</groupId>
+           <artifactId>nsx-samples</artifactId>
+        </dependency>
+        <dependency>
+           <groupId>${vcf.sdk.groupId}</groupId>
+           <artifactId>sddc-manager-samples</artifactId>
+        </dependency>
+        <dependency>
+           <groupId>${vcf.sdk.groupId}</groupId>
+           <artifactId>vcf-installer-samples</artifactId>
+        </dependency>
+        <dependency>
+           <groupId>${vcf.sdk.groupId}</groupId>
+           <artifactId>log-management-samples</artifactId>
+        </dependency>
+        <dependency>
+           <groupId>${vcf.sdk.groupId}</groupId>
+           <artifactId>operations-networks-samples</artifactId>
+        </dependency>
+        <dependency>
+           <groupId>${vcf.sdk.groupId}</groupId>
+           <artifactId>operations-samples</artifactId>
+        </dependency>
+        <dependency>
+           <groupId>${vcf.sdk.groupId}</groupId>
+           <artifactId>vsphere-samples</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <configuration>
+                    <skip>false</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

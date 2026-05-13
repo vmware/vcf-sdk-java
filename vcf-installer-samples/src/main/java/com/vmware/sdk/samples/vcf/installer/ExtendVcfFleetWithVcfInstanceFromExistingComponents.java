@@ -1,6 +1,6 @@
 /*
  * ******************************************************************
- * Copyright (c) 2025 Broadcom. All Rights Reserved.
+ * Copyright (c) 2025-2026 Broadcom. All Rights Reserved.
  * The term "Broadcom" refers to Broadcom Inc.
  * and/or its subsidiaries.
  *
@@ -11,8 +11,8 @@
 package com.vmware.sdk.samples.vcf.installer;
 
 import static com.vmware.sdk.samples.utils.ssl.SecurityHelper.loadKeystoreOrCreateEmpty;
-import static com.vmware.sdk.samples.vcf.installer.utils.SddcSpecUtil.AUTO_GENERATED_PASSWORD;
-import static com.vmware.sdk.samples.vcf.installer.utils.SddcSpecUtil.hostnameToFqdn;
+import static com.vmware.sdk.samples.vcf.installer.helpers.SddcSpecHelper.AUTO_GENERATED_PASSWORD;
+import static com.vmware.sdk.samples.vcf.installer.helpers.SddcSpecHelper.hostnameToFqdn;
 import static com.vmware.vapi.internal.util.StringUtils.isBlank;
 
 import java.security.KeyStore;
@@ -22,7 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vmware.sdk.samples.utils.SampleCommandLineParser;
-import com.vmware.sdk.samples.vcf.installer.utils.SddcSpecUtil;
+import com.vmware.sdk.samples.vcf.installer.helpers.SddcSpecHelper;
+import com.vmware.sdk.vcf.installer.model.IPv4Pool;
+import com.vmware.sdk.vcf.installer.model.IPv6Pool;
 import com.vmware.sdk.vcf.installer.model.SddcSpec;
 import com.vmware.sdk.vcf.installer.model.SddcTask;
 import com.vmware.sdk.vcf.installer.model.Validation;
@@ -36,7 +38,7 @@ import com.vmware.vapi.client.ApiClient;
 
 /**
  * Demonstrates how to deploy new VCF Instance within an existing VCF Fleet, reusing existing Vcenter, NSX-T, VCF
- * Operations, VCF Operations Fleet Management and VCF Automation. <br>
+ * Operations, VCF Operations Fleet Management, VCF Automation, VIDB and VSP. <br>
  * Prerequisites for successful deployment:
  *
  * <ol>
@@ -75,12 +77,6 @@ public class ExtendVcfFleetWithVcfInstanceFromExistingComponents {
 
     /** REQUIRED: Comma separated list of NTP servers used when deploying SDDC Manager appliance. */
     public static String[] ntpServers = {};
-
-    /**
-     * OPTIONAL: Hostname or FQDN of the existing VCF Operations Fleet Management. If passed discovery will be skipped
-     * for Fleet Management.
-     */
-    public static String vcfOpsFleetManagementFqdn = null;
 
     /** OPTIONAL: SSL Certificate SHA256 Thumbprint of the existing VCF Operations Fleet Management. */
     public static String vcfOpsFleetManagementThumbprint = null;
@@ -151,6 +147,66 @@ public class ExtendVcfFleetWithVcfInstanceFromExistingComponents {
     /** REQUIRED: Hostname or FQDN of the SDDC Manager that will be deployed. */
     public static String sddcManagerFqdn = "sm";
 
+    /** OPTIONAL: VIDB hostname. */
+    public static String vidbHostname = null;
+
+    /** OPTIONAL: VIDB size. */
+    public static String vidbSize = null;
+
+    /** REQUIRED: VSP platform fqdn. */
+    public static String vspPlatformFqdn = "vsp-platform.vrack.vsphere.local";
+
+    /** OPTIONAL: VSP IPv4 CIDR. */
+    public static String vspIpv4Cidr = null;
+
+    /** OPTIONAL: VSP IPv4 start IP address. */
+    public static String vspIpv4StartIpAddress = null;
+
+    /** OPTIONAL: VSP IPv4 end IP address. */
+    public static String vspIpv4EndIpAddress = null;
+
+    /** OPTIONAL: VSP IPv4 IP pool addresses. */
+    public static String[] vspIpv4Addresses = null;
+
+    /** OPTIONAL: VSP IPv4 excluded addresses. */
+    public static String[] vspIpv4ExcludedAddresses = null;
+
+    /** OPTIONAL: VSP IPv6 CIDR. */
+    public static String vspIpv6Cidr = null;
+
+    /** OPTIONAL: VSP IPv6 start IP address. */
+    public static String vspIpv6StartIpAddress = null;
+
+    /** OPTIONAL: VSP IPv6 end IP address. */
+    public static String vspIpv6EndIpAddress = null;
+
+    /** OPTIONAL: VSP IPv6 pool addresses. */
+    public static String[] vspIpv6Addresses = null;
+
+    /** OPTIONAL: VSP IPv6 excluded addresses. */
+    public static String[] vspIpv6ExcludedAddresses = null;
+
+    /** OPTIONAL: VSP size. */
+    public static String vspSize = null;
+
+    /** OPTIONAL: VSP internal cluster CIDR for IPv4. */
+    public static String vspInternalClusterCidrIpv4 = null;
+
+    /** OPTIONAL: VSP internal cluster CIDR for IPv6. */
+    public static String vspInternalClusterCidrIpv6 = null;
+
+    /** REQUIRED: VSP instance FQDN. */
+    public static String vspInstanceFqdn = "vsp-instance.vrack.vsphere.local";
+
+    /** OPTIONAL: VSP fleet FQDN. */
+    public static String vspFleetFqdn = null;
+
+    /** OPTIONAL: VSP use existing deployment. */
+    public static Boolean vspUseExistingDeployment = null;
+
+    /** OPTIONAL: VSP SSL thumbprint. */
+    public static String vspSslThumbprint = null;
+
     /** OPTIONAL: Only validate {@link SddcSpec} and skip VCF deployment. */
     public static Boolean validateOnly = null;
 
@@ -178,7 +234,7 @@ public class ExtendVcfFleetWithVcfInstanceFromExistingComponents {
         try (ApiClient client =
                 vcfInstallerClientFactory.createClient(installerFqdn, vcfInstallerAdminPassword, keyStore)) {
             SddcSpec sddcSpec = createSddcSpecForExtensionOfExistingVcfFleetWithExistingVcenterNsx(client);
-            log.info("Crafted Deployment Spec is: {}", SddcSpecUtil.sddcSpecToJson(sddcSpec));
+            log.info("Crafted Deployment Spec is: {}", SddcSpecHelper.sddcSpecToJson(sddcSpec));
 
             Validations validations = client.createStub(Validations.class);
             Validation validationResult =
@@ -200,7 +256,7 @@ public class ExtendVcfFleetWithVcfInstanceFromExistingComponents {
                 SddcTaskUtil.waitForSddcDeploymentTaskAndFailOnError(sddcs, sddcTaskId);
                 log.info("Finished VCF Instance deployment task with id: {}", sddcTaskId);
 
-                SddcSpecUtil.saveSddcSpecToFile(client, sddcTaskId, deploymentSpecSaveFilePath);
+                SddcSpecHelper.saveSddcSpecToFile(client, sddcTaskId, deploymentSpecSaveFilePath);
             }
 
             log.info("Sample completed successfully");
@@ -212,38 +268,30 @@ public class ExtendVcfFleetWithVcfInstanceFromExistingComponents {
         String vcfOperationsFqdn = hostnameToFqdn(vcfOpsFqdn, dnsDomain);
         String vcfOperationsThumbprint = vcfOpsThumbprint;
         if (isBlank(vcfOperationsThumbprint)) {
-            vcfOperationsThumbprint = SddcSpecUtil.getSslThumbprint(vcfOperationsFqdn, trustStorePath);
+            vcfOperationsThumbprint = SddcSpecHelper.getSslThumbprint(vcfOperationsFqdn, trustStorePath);
         }
 
         VcfOperationsDiscoveryResult vcfOpsDiscoveryResult =
-                SddcSpecUtil.discoverVcfOps(vcfClient, vcfOperationsFqdn, vcfOpsAdminPassword, vcfOperationsThumbprint);
+                SddcSpecHelper.discoverVcfOps(vcfClient, vcfOperationsFqdn, vcfOpsAdminPassword, vcfOperationsThumbprint);
 
         SddcSpec.Builder builder = new SddcSpec.Builder();
-        builder.setWorkflowType(SddcSpecUtil.WorkflowType.VCF.toString());
+        builder.setWorkflowType(SddcSpecHelper.WorkflowType.VCF.toString());
         builder.setCeipEnabled(true);
         builder.setVersion(MiscUtil.getVersionWithoutBuildNumber(vcfClient));
         builder.setNtpServers(List.of(ntpServers));
-        builder.setDnsSpec(SddcSpecUtil.createDnsSpec(dnsDomain, dnsNameserver));
+        builder.setDnsSpec(SddcSpecHelper.createDnsSpec(dnsDomain, dnsNameserver));
 
         // Operations stack
-        // VCF Operations Fleet Management
-        // Use Existing VCF Ops Fleet Management
-        builder.setVcfOperationsFleetManagementSpec(SddcSpecUtil.createVcfOperationsFleetManagementSpec(
-                vcfOpsFleetManagementFqdn,
-                vcfOpsFleetManagementAdminPassword,
-                vcfOpsFleetManagementThumbprint,
-                vcfOpsDiscoveryResult.getVcfOperationsManagementNode(),
-                trustStorePath));
         // VCF Operations
         // Use Existing VCF Ops
-        builder.setVcfOperationsSpec(SddcSpecUtil.createVcfOperationsSpec(
+        builder.setVcfOperationsSpec(SddcSpecHelper.createVcfOperationsSpec(
                 vcfOperationsFqdn,
                 vcfOpsAdminPassword,
                 vcfOperationsThumbprint,
                 vcfOpsDiscoveryResult.getVcfOperationsNodes()));
         // VCF Automation
         // Use Existing VCF Automation
-        builder.setVcfAutomationSpec(SddcSpecUtil.createSddcVcfAutomationSpec(
+        builder.setVcfAutomationSpec(SddcSpecHelper.createSddcVcfAutomationSpec(
                 hostnameToFqdn(vcfAutomationFqdn, dnsDomain),
                 vcfAutomationAdminPassword,
                 vcfAutomationThumbprint,
@@ -251,22 +299,22 @@ public class ExtendVcfFleetWithVcfInstanceFromExistingComponents {
                 trustStorePath));
         // VCF Operations Collector
         builder.setVcfOperationsCollectorSpec(
-                SddcSpecUtil.createVcfCollectorSpec(hostnameToFqdn(vcfOpsCollectorFqdn, dnsDomain)));
+                SddcSpecHelper.createVcfCollectorSpec(hostnameToFqdn(vcfOpsCollectorFqdn, dnsDomain)));
 
         // vCenter
         // Use Existing vCenter
-        builder.setVcenterSpec(SddcSpecUtil.createSddcVcenterSpec(
+        builder.setVcenterSpec(SddcSpecHelper.createSddcVcenterSpec(
                 hostnameToFqdn(vCenterFqdn, dnsDomain),
                 vCenterThumbprint,
                 vCenterRootPassword,
                 vCenterAdminSsoUsername,
                 vCenterAdminSsoPassword,
                 trustStorePath));
-        builder.setClusterSpec(SddcSpecUtil.createSddcClusterSpec(sddcId));
+        builder.setClusterSpec(SddcSpecHelper.createSddcClusterSpec(sddcId));
 
         // NSX-T
         // Use Existing NSX-T
-        builder.setNsxtSpec(SddcSpecUtil.createSddcNsxtSpec(
+        builder.setNsxtSpec(SddcSpecHelper.createSddcNsxtSpec(
                 hostnameToFqdn(nsxFqdn, dnsDomain),
                 hostnameToFqdn(nsxVipFqdn, dnsDomain),
                 nsxThumbprint,
@@ -281,12 +329,41 @@ public class ExtendVcfFleetWithVcfInstanceFromExistingComponents {
 
         // SDDC Manager
         builder.setSddcId(sddcId);
-        builder.setSddcManagerSpec(SddcSpecUtil.createSddcManagerSpec(
+        builder.setSddcManagerSpec(SddcSpecHelper.createSddcManagerSpec(
                 hostnameToFqdn(sddcManagerFqdn, dnsDomain),
                 AUTO_GENERATED_PASSWORD, // SDDC Manager Root Password
                 AUTO_GENERATED_PASSWORD, // SDDC Manager Local User Password
                 AUTO_GENERATED_PASSWORD, // SDDC Manager VCF User Password
                 false)); // Use Existing SDDC Manager
+
+        // VIDB spec
+        builder.setVidbSpec(SddcSpecHelper.createVidbSpec(vidbHostname, null, vidbSize));
+
+        // IPv4 pool
+        IPv4Pool ipv4Pool = SddcSpecHelper.createVspIPv4Pool(vspIpv4Cidr, 
+                                                          vspIpv4StartIpAddress, 
+                                                          vspIpv4EndIpAddress, 
+                                                          vspIpv4Addresses, 
+                                                          vspIpv4ExcludedAddresses);
+
+        // IPv6 pool
+        IPv6Pool ipv6Pool = SddcSpecHelper.createVspIPv6Pool(vspIpv6Cidr, 
+                                                          vspIpv6StartIpAddress, 
+                                                          vspIpv6EndIpAddress, 
+                                                          vspIpv6Addresses, 
+                                                          vspIpv6ExcludedAddresses);
+
+        // VSP cluster spec
+        builder.setVspClusterSpec(SddcSpecHelper.createVspClusterSpec(vspPlatformFqdn,
+                                                                      AUTO_GENERATED_PASSWORD,
+                                                                      ipv4Pool, 
+                                                                      ipv6Pool, 
+                                                                      vspSize,
+                                                                      vspInternalClusterCidrIpv4, 
+                                                                      vspInternalClusterCidrIpv6,
+                                                                      vspInstanceFqdn, 
+                                                                      vspFleetFqdn,
+                                                                      null));
 
         return builder.build();
     }

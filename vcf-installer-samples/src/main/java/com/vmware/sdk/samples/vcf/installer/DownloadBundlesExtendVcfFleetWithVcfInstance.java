@@ -1,8 +1,9 @@
 /*
  * ******************************************************************
- * Copyright (c) 2025 Broadcom. All Rights Reserved.
- * The term "Broadcom" refers to Broadcom Inc.
+ * Copyright (c) 2025-2026 Broadcom. All Rights Reserved.
+ * Broadcom Confidential. The term "Broadcom" refers to Broadcom Inc.
  * and/or its subsidiaries.
+ * The term "Broadcom" refers to Broadcom Inc.
  *
  * SPDX-License-Identifier: Apache-2.0
  * ******************************************************************
@@ -29,7 +30,8 @@ import com.vmware.vapi.client.ApiClient;
 
 /**
  * Demonstrates how to configure online depot and download bundles necessary for extending a VCF Fleet with a VCF
- * Instance. This includes the following components: vCenter, NSX, SDDC Manager.
+ * Instance. This includes the following components: vCenter, NSX, SDDC Manager, VIDB, VCF fleet lcm, SALT raas,
+ * SALT master, Telemetry acceptor,Fleet depot service, Fleet SDDC Lcm, VSP platform, VCF Operations, License server.
  */
 public class DownloadBundlesExtendVcfFleetWithVcfInstance {
     private static final Logger log = LoggerFactory.getLogger(DownloadBundlesExtendVcfFleetWithVcfInstance.class);
@@ -92,8 +94,29 @@ public class DownloadBundlesExtendVcfFleetWithVcfInstance {
                     downloadLatestBundlesUtil.getLatestProductReleaseComponents(
                             "VCF",
                             versionWithoutBuildNumber,
-                            Set.of( // Components that comprise a VCF Instance
-                                    "VCENTER", "NSX_T_MANAGER", "SDDC_MANAGER"));
+                            Set.of(
+                                // VCF Services Platform
+                                "VSP",
+                                // VCF fleet lifecycle management
+                                "VCF_FLEET_LCM",
+                                // VCF fleet SDDC lifecycle management
+                                "VCF_SDDC_LCM",
+                                // SALT raas vmsp component
+                                "VCF_SALT_RAAS",
+                                // SALT master vmsp component
+                                "VCF_SALT",
+                                // Telemetry acceptor component
+                                "TELEMETRY_ACCEPTOR",
+                                // Fleet depot service component
+                                "DEPOT_SERVICE",
+                                // VCF Identity Broker component
+                                "VIDB",
+                                // Migration service engine
+                                "VCF_SERVICE_VCD_MIGRATION_BACKEND",
+                                // License server component
+                                "VCF_LICENSE_SERVER",
+                                // Components that comprise a VCF Instance
+                                "VCENTER", "NSX_T_MANAGER", "SDDC_MANAGER"));
             log.info("Retrieved product release components");
 
             List<String> bundleIdsBeingDownloaded =

@@ -17,7 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vmware.sdk.samples.sddcm.tasks.TaskHelper;
-import com.vmware.sdk.samples.sddcm.utils.SddcUtil;
+import com.vmware.sdk.samples.sddcm.helpers.SddcHelper;
 import com.vmware.sdk.samples.utils.SampleCommandLineParser;
 import com.vmware.sdk.sddcm.model.HostDecommissionSpec;
 import com.vmware.sdk.sddcm.model.Task;
@@ -43,8 +43,8 @@ public class HostDecommissionExample {
     public static void main(String[] args) {
         SampleCommandLineParser.load(HostDecommissionExample.class, args);
 
-        try (SddcUtil.SddcFactory factory =
-                new SddcUtil.SddcFactory(sddcManagerHostname, sddcManagerSsoUserName, sddcManagerSsoPassword)) {
+        try (SddcHelper.SddcFactory factory =
+                new SddcHelper.SddcFactory(sddcManagerHostname, sddcManagerSsoUserName, sddcManagerSsoPassword)) {
             V1Factory v1Factory = factory.getV1Factory();
             // Prepare the host de-commission spec
             List<HostDecommissionSpec> hostDecommissionSpecList = new ArrayList<>();

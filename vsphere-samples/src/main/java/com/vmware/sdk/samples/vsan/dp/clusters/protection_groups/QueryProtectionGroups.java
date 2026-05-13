@@ -1,6 +1,6 @@
 /*
  * ******************************************************************
- * Copyright (c) 2025 Broadcom. All Rights Reserved.
+ * Copyright (c) 2025-2026 Broadcom. All Rights Reserved.
  * The term "Broadcom" refers to Broadcom Inc.
  * and/or its subsidiaries.
  *
@@ -65,7 +65,7 @@ public class QueryProtectionGroups {
         SnapshotServiceClient snapshotServiceClient = new SnapshotServiceClient(
                 snapServiceAddress, httpConfiguration, serverAddress, portConfigurer, username, password);
 
-        if (pgId == null) {
+        if (pgId != null) {
             ProtectionGroupInfo info = get(snapshotServiceClient, clusterId, pgId);
             log.info("Get protection group for id {}: {}", pgId, info);
         } else {

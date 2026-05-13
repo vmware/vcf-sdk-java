@@ -9,16 +9,16 @@
       1. [Common client initialization](#common-client-initialization)
          1. [vCenter](#vcenter)
          2. [STS (ssoclient)](#sts-ssoclient)
-         3. [SMS / PBM / VSLM](#sms-pbm-vslm)
+         3. [SMS / PBM / VSLM](#sms--pbm--vslm)
          4. [vSAN](#vsan)
       2. [Advanced client initialization](#advanced-client-initialization)
       3. [Using custom trust store](#using-custom-trust-store)
       4. [Insecure clients](#insecure-clients)
-      5. [Migrating  business logic to the new utility code](#migrating-business-logic-to-the-new-utility-code)
+      5. [Migrating  business logic to the new utility code](#migrating--business-logic-to-the-new-utility-code)
 
 # Preface
 
-The VCF 9.0 Java SDK comes with various improvements in different areas. This document provides a high-level overview of the changes and guidelines for application developers \- how to use the new SDK and how to migrate existing applications from older SDK versions.
+The VCF 9.1 Java SDK comes with various improvements in different areas. This document provides a high-level overview of the changes and guidelines for application developers \- how to use the new SDK and how to migrate existing applications from older SDK versions.
 
 Prior to the VCF 9.0 release, there were 3 SDKs:
 
@@ -43,11 +43,11 @@ Integrating these SDKs into a customer application required the developer to:
 * instruct the application’s start up phase to include the downloaded jars in the classpath
 
 This developer setup was uncommon because it does not follow the industry standards.
-The VCF 9.0 SDK addresses them and other problems discussed in the document.
+The VCF 9.1 SDK addresses them and other problems discussed in the document.
 
 # Getting started
 
-The VCF 9.0 SDK covers the following services:
+The VCF 9.1 SDK covers the following services:
 
 * vCenter  
 * vCenter Single Sign-On Security Token Service (STS)   
@@ -62,29 +62,39 @@ The SDK provides bindings, utility code that supplements them and samples that d
 
 The table below represents the GAV (groupId, artifactId and version) coordinates of each component:
 
-| groupId        | artifactId          | version | Notes                                                                                             |
-|----------------|---------------------|---------|---------------------------------------------------------------------------------------------------|
-| com.vmware.sdk | vim25               | 9.0.0.0 | vCenter \+ vSAN WSDL bindings                                                                     |
-| com.vmware.sdk | ssoclient           | 9.0.0.0 | WSDL bindings                                                                                     |
-| com.vmware.sdk | sms                 | 9.0.0.0 | WSDL bindings                                                                                     |
-| com.vmware.sdk | pbm                 | 9.0.0.0 | WSDL bindings                                                                                     |
-| com.vmware.sdk | vslm                | 9.0.0.0 | WSDL bindings                                                                                     |
-| com.vmware.sdk | eam                 | 9.0.0.0 | WSDL bindings                                                                                     |
-| com.vmware.sdk | sddc-manager        | 9.0.0.0 | OpenAPI bindings                                                                                  |
-| com.vmware.sdk | vcf-installer       | 9.0.0.0 | OpenAPI bindings                                                                                  |
-| com.vmware.sdk | vcenter             | 9.0.0.0 | vCenter REST API bindings                                                                         |
-| com.vmware.sdk | vsan-dp             | 9.0.0.0 | vSAN DP REST API bindings                                                                         |
-| —              | —                   | —       | —                                                                                                 |
-| com.vmware.sdk | ssoclient-utils     | 9.0.0.0 | Utility code for SAML token-related operations.                                                   |
-| com.vmware.sdk | vsphere-utils       | 9.0.0.0 | Utility code for common vSphere related needs such as authentication, client initialization, etc. |
-| com.vmware.sdk | vcf-installer-utils | 9.0.0.0 | Utility code for common VCF Installer related needs.                                              |
+| groupId        | artifactId              | version               | Notes                                                                                             |
+|----------------|-------------------------|-----------------------|---------------------------------------------------------------------------------------------------|
+| com.vmware.sdk | vim25                   | 9.1.0.0               | vCenter \+ vSAN WSDL bindings                                                                     |
+| com.vmware.sdk | ssoclient               | 9.1.0.0               | WSDL bindings                                                                                     |
+| com.vmware.sdk | sms                     | 9.1.0.0               | WSDL bindings                                                                                     |
+| com.vmware.sdk | pbm                     | 9.1.0.0               | WSDL bindings                                                                                     |
+| com.vmware.sdk | vslm                    | 9.1.0.0               | WSDL bindings                                                                                     |
+| com.vmware.sdk | eam                     | 9.1.0.0               | WSDL bindings                                                                                     |
+| com.vmware.sdk | sddc-manager            | 9.1.0.0               | OpenAPI bindings                                                                                  |
+| com.vmware.sdk | vcf-installer           | 9.1.0.0               | OpenAPI bindings                                                                                  |
+| com.vmware.sdk | vcenter                 | 9.1.0.0               | vCenter REST API bindings                                                                         |
+| com.vmware.sdk | fleet-lcm               | 9.1.0.0               | Fleet LCM bindings                                                                                |
+| com.vmware.sdk | nsx                     | 9.1.0.0               | NSX bindings                                                                                      |
+| com.vmware.sdk | platform-api-model      | 9.1.0.0               | Platform API Model bindings                                                                       |
+| com.vmware.sdk | sddc-lcm                | 9.1.0.0               | SDDC LCM bindings                                                                                 |
+| com.vmware.sdk | vcf-log-mgmt            | 9.1.0.0               | VCF Log Management bindings                                                                       |
+| com.vmware.sdk | vcf-operations-networks | 9.1.0.0               | VCF Operations Networks bindings                                                                  |
+| com.vmware.sdk | vsan-data-protection    | 9.1.0.0               | vSAN Data Protection bindings                                                                     |
+| —              | —                       | —                     | —                                                                                                 |
+| com.vmware.sdk | ssoclient-utils         | 9.1.0.0               | Utility code for SAML token-related operations.                                                   |
+| com.vmware.sdk | vsphere-utils           | 9.1.0.0               | Utility code for common vSphere related needs such as authentication, client initialization, etc. |
+| com.vmware.sdk | vcf-installer-utils     | 9.1.0.0               | Utility code for common VCF Installer related needs.                                              |
+| com.vmware.sdk | vcf-ops-networks-utils  | 9.1.0.0               | Utility code for common VCF Operations Networks related needs.                                    |
+| com.vmware.sdk | vcops-suiteapi-client   | 9.1.0.0               | VCF Operations Suite API client code                                                              |
+| com.vmware.sdk | vmware-sdk-common       | 9.1.0.0               | Utility code for common VCF SDK needs.                                                            |
+| com.vmware.sdk | wsdl-utils              | 9.1.0.0               | WSDL utility code                                                                                 |
 
-From a dependency declaration perspective, there are 2 ways to declare dependencies:  using the GAV coordinates to declare each dependency individually or by importing the VCF 9.0 SDK BOM and delegating the version management to it. Examples:
+From a dependency declaration perspective, there are 2 ways to declare dependencies:  using the GAV coordinates to declare each dependency individually or by importing the VCF 9.1 SDK BOM and delegating the version management to it. Examples:
 
 GAV:
 
 ```kotlin
-implementation("com.vmware.sdk:vim25:9.0.0.0")
+implementation("com.vmware.sdk:vim25:9.1.0.0")
 ```
 or 
 
@@ -92,14 +102,14 @@ or
 <dependency>
     <groupId>com.vmware.sdk</groupId>
     <artifactId>vim25</artifactId>
-    <version>9.0.0.0</version>
+    <version>9.1.0.0</version>
 </dependency>
 ```
 
 BOM:
 
 ```kotlin
-implementation(platform("com.vmware.sdk:vcf-sdk-bom:9.0.0.0"))
+implementation(platform("com.vmware.sdk:vcf-sdk-bom:9.1.0.0"))
 implementation("com.vmware.sdk:vim25")
 ```
 
@@ -111,7 +121,7 @@ or
         <dependency>
             <groupId>com.vmware.sdk</groupId>
             <artifactId>vcf-sdk-bom</artifactId>
-            <version>9.0.0.0</version>
+            <version>9.1.0.0</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
@@ -130,7 +140,7 @@ From application-development perspective, there are 2 ways to declare dependenci
 
 ## Key SDK concepts
 
-The VCF 9.0 Java SDK is an evolution of the existing SDKs \- the various SDKs are unified and integrated under a single umbrella. For the most part they are compatible with previous versions, but still require some amount of adaptation in the pre-existing consuming application code.
+The VCF SDK is an evolution of previously existing SDKs \- the various SDKs are unified and integrated under a single umbrella. For the most part they are compatible with previous versions, but still require some amount of adaptation in the pre-existing consuming application code.
 
 Different components of the VCF product have different APIs \- for example, the majority of the core vSphere stack exposes WSDL-based APIs. This is applicable for vCenter, STS, vSAN, SMS, PBM, VSLM and EAM. The maven artifacts contain automatically generated bindings which are compatible with Jakarta EE 9 (Jakarta XML Binding 3.0). The SDK-provided utility code is built on top of Apache CXF 4.0.
 
@@ -145,11 +155,11 @@ The application’s build process has to be updated to one of the options below:
 * In case the build system has Internet access, it can download the SDK components from Maven Central  
 * For air-gapped build environments, the application developer has to download vcf-sdk-java.zip from Broadcom’s developer portal. The archive contains a top-level maven directory with the SDK-provided components. The application developer should incorporate it in the build system (e.g. by uploading the Maven artifacts to an internal mirror) and should also make sure that all direct and transitive dependencies, specified in the POM descriptor, are available at compile and run time.
 
-The VCF 9.0 SDK supports JDK 11, 17 and 21\.
+The VCF 9.1 SDK supports JDK 11, 17, 21 and 25\.
 
 Note 1: The SDK no longer provides \*-samples.jar(s). If the application code relied on such jars, it should be adapted to replace this dependency with the newly provided \*-utils alternatives e.g. **vsphere-utils**.
 
-Note 2: Starting with VCF 9.0, all SDK components come with PGP signatures, ensuring their authenticity. The application build system can be updated to include a verification that the artifacts are signed with the PGP key that has the following fingerprint: **1131612154DCAD7C88766B56DA1F25B6A757434F**.
+Note 2: All SDK components come with PGP signatures, ensuring their authenticity. The application build system can be updated to include a verification that the artifacts are signed with the PGP key that has the following fingerprint: **1131612154DCAD7C88766B56DA1F25B6A757434F**.
 
 ### Application code changes
 
@@ -163,7 +173,7 @@ The samples which demonstrate the WSDL-based APIs used to come with **com.vmware
 
 The samples which demonstrate the REST APIs used to come with **vmware.samples.common.VimAuthenticationHelper** and **vmware.samples.common.VapiAuthenticationHelper**.
 
-Those classes were sample code used to demonstrate how to establish a session in the two different API endpoints. With the 9.0 SDK there’s a new **vsphere-utils** artifact, available on Maven Central, that can be consumed as a standalone library. It contains reusable utility code that sets up clients, authenticates them and hides away common boilerplate code. 
+Those classes were sample code used to demonstrate how to establish a session in the two different API endpoints. Starting with 9.0 VCF SDK there’s a new **vsphere-utils** artifact, available on Maven Central, that can be consumed as a standalone library. It contains reusable utility code that sets up clients, authenticates them and hides away common boilerplate code. 
 
 **com.vmware.sdk.vsphere.utils.VcenterClientFactory** is a factory which is expected to be used on a per-instance basis. It has multiple constructors, making it possible to configure various aspects of the underlying HTTP client:
 
@@ -387,7 +397,7 @@ Essentially this replaces:
 
 ###### *vSAN*
 
-Prior to the 9.0 release the vSAN SDK used to expect that the user had already downloaded & prepared the vSphere Management SDK (i.e. vim25.jar & co. had to be used in conjunction with vsanmgmt-sdk.jar). This is no longer the case because the 9.0 version of vim25.jar contains both the VIM and vSAN bindings. User should remove vsanmgmt-sdk.jar and use vSAN binding in 9.0 version of vim25.jar. Assuming that the application code already depends on **vsphere-utils**, the vSAN client initialization boils down to:
+Prior to the 9.0 release the vSAN SDK used to expect that the user had already downloaded & prepared the vSphere Management SDK (i.e. vim25.jar & co. had to be used in conjunction with vsanmgmt-sdk.jar). This is no longer the case because the 9.0 and later versions of vim25.jar contain both the VIM and vSAN bindings. User should remove vsanmgmt-sdk.jar and use vSAN binding in 9.0 or newer version of vim25.jar. Assuming that the application code already depends on **vsphere-utils**, the vSAN client initialization boils down to:
 
 ```java
 String serverAddress = "vcenter1.mycompany.com"

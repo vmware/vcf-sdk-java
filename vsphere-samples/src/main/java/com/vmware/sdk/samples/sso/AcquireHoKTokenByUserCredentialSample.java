@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
-import com.vmware.sdk.samples.helpers.SecurityUtil;
+import com.vmware.sdk.samples.helpers.SecurityHelper;
 import com.vmware.sdk.samples.utils.SampleCommandLineParser;
 import com.vmware.sdk.ssoclient.utils.SoapUtils;
 import com.vmware.sdk.utils.ssl.InsecureTrustManager;
@@ -42,12 +42,12 @@ public class AcquireHoKTokenByUserCredentialSample {
     public static void main(String[] args) {
         SampleCommandLineParser.load(AcquireHoKTokenByUserCredentialSample.class, args);
 
-        SecurityUtil securityUtil = SecurityUtil.loadFromDefaultFiles();
+        SecurityHelper helper = SecurityHelper.loadFromDefaultFiles();
 
         log.info("Acquiring a HoK token by using user credentials, use the pre-generated private key and certificate");
 
-        PrivateKey privateKey = securityUtil.getPrivateKey();
-        X509Certificate certificate = securityUtil.getUserCert();
+        PrivateKey privateKey = helper.getPrivateKey();
+        X509Certificate certificate = helper.getUserCert();
 
         SimpleHttpConfigurer stsPortConfigurer = new SimpleHttpConfigurer(new InsecureTrustManager());
 

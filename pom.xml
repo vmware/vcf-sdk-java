@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (c) 2025 Broadcom. All Rights Reserved.
+The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
+
+SPDX-License-Identifier: Apache-2.0 -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.vmware.sdk</groupId>
+    <artifactId>vcf-java-sdk-samples</artifactId>
+    <version>9.1.0.0</version>
+    <packaging>pom</packaging>
+
+    <properties>
+        <maven.compiler.release>11</maven.compiler.release>
+        <slf4j.version>2.0.16</slf4j.version>
+        <cxf.version>4.0.9</cxf.version>
+        <vcf.sdk.groupId>com.vmware.sdk</vcf.sdk.groupId>
+        <vcf.sdk.version>9.1.0.0</vcf.sdk.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- submodules -->
+            <dependency>
+                <groupId>${vcf.sdk.groupId}</groupId>
+                <artifactId>samples-infrastructure</artifactId>
+                <version>${vcf.sdk.version}</version>
+            </dependency>
+            <dependency>
+               <groupId>${vcf.sdk.groupId}</groupId>
+               <artifactId>nsx-samples</artifactId>
+               <version>${vcf.sdk.version}</version>
+            </dependency>
+            <dependency>
+               <groupId>${vcf.sdk.groupId}</groupId>
+               <artifactId>sddc-manager-samples</artifactId>
+               <version>${vcf.sdk.version}</version>
+            </dependency>
+            <dependency>
+               <groupId>${vcf.sdk.groupId}</groupId>
+               <artifactId>vcf-installer-samples</artifactId>
+               <version>${vcf.sdk.version}</version>
+            </dependency>
+            <dependency>
+               <groupId>${vcf.sdk.groupId}</groupId>
+               <artifactId>log-management-samples</artifactId>
+               <version>${vcf.sdk.version}</version>
+            </dependency>
+            <dependency>
+               <groupId>${vcf.sdk.groupId}</groupId>
+               <artifactId>operations-networks-samples</artifactId>
+               <version>${vcf.sdk.version}</version>
+            </dependency>
+            <dependency>
+               <groupId>${vcf.sdk.groupId}</groupId>
+               <artifactId>operations-samples</artifactId>
+               <version>${vcf.sdk.version}</version>
+            </dependency>
+            <dependency>
+               <groupId>${vcf.sdk.groupId}</groupId>
+               <artifactId>vsphere-samples</artifactId>
+               <version>${vcf.sdk.version}</version>
+            </dependency>
+
+            <!-- SDK bom -->
+            <dependency>
+                <groupId>${vcf.sdk.groupId}</groupId>
+                <artifactId>vcf-sdk-bom</artifactId>
+                <version>${vcf.sdk.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- libs -->
+            <dependency>
+                <groupId>jakarta.xml.ws</groupId>
+                <artifactId>jakarta.xml.ws-api</artifactId>
+                <version>3.0.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-frontend-jaxws</artifactId>
+                <version>${cxf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-core</artifactId>
+                <version>${cxf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-transports-http</artifactId>
+                <version>${cxf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-features-logging</artifactId>
+                <version>${cxf.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.sun.xml.messaging.saaj</groupId>
+                <artifactId>saaj-impl</artifactId>
+                <version>3.0.4</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>1.5.20</version>
+            </dependency>
+            <!--
+            Use safe Angus version overriding the CXF dependency. See CVE-2021-44549.
+            Remove this when CXF is updated.
+            -->
+            <dependency>
+                <groupId>org.eclipse.angus</groupId>
+                <artifactId>angus-mail</artifactId>
+                <version>2.0.4</version>
+            </dependency>
+
+            <!-- testLibs -->
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>5.10.3</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.platform</groupId>
+                <artifactId>junit-platform-launcher</artifactId>
+                <version>1.10.3</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.easymock</groupId>
+                <artifactId>easymock</artifactId>
+                <version>5.3.0</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>3.6.1</version>
+                    <configuration>
+                        <cleanupDaemonThreads>false</cleanupDaemonThreads>
+                        <skip>true</skip>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <modules>
+        <module>samples-infrastructure</module>
+        <module>samples-runner</module>
+        <module>nsx-samples</module>
+        <module>sddc-manager-samples</module>
+        <module>vcf-installer-samples</module>
+        <module>vcf-operations-samples/log-management-samples</module>
+        <module>vcf-operations-samples/operations-networks-samples</module>
+        <module>vcf-operations-samples/operations-samples</module>
+        <module>vsphere-samples</module>
+    </modules>
+</project>

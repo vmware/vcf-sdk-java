@@ -1,8 +1,9 @@
 /*
  * ******************************************************************
- * Copyright (c) 2025 Broadcom. All Rights Reserved.
- * The term "Broadcom" refers to Broadcom Inc.
+ * Copyright (c) 2025-2026 Broadcom. All Rights Reserved.
+ * Broadcom Confidential. The term "Broadcom" refers to Broadcom Inc.
  * and/or its subsidiaries.
+ * The term "Broadcom" refers to Broadcom Inc.
  *
  * SPDX-License-Identifier: Apache-2.0
  * ******************************************************************
@@ -29,7 +30,8 @@ import com.vmware.vapi.client.ApiClient;
 
 /**
  * Demonstrates how to configure online depot and download bundles necessary for deploying VVF. This includes the
- * following components: vCenter, VCF Operations.
+ * following components: vCenter, VCF Operations and the following VSP components, VCF fleet lcm, Fleet depot service,
+ * Fleet SDDC Lcm, License server.
  */
 public class DownloadBundlesVvfInstance {
     private static final Logger log = LoggerFactory.getLogger(DownloadBundlesVvfInstance.class);
@@ -92,9 +94,22 @@ public class DownloadBundlesVvfInstance {
                             "VVF",
                             versionWithoutBuildNumber,
                             Set.of(
-                                    "VCENTER",
-                                    // VCF Operations
-                                    "VROPS"));
+                                // VCF Services Platform
+                                "VSP",
+                                // VCF fleet lcm
+                                "VCF_FLEET_LCM",
+                                // Fleet depot service
+                                "DEPOT_SERVICE",
+                                // Fleet SDDC Lcm
+                                "VCF_SDDC_LCM",
+                                // License server
+                                "VCF_LICENSE_SERVER",
+                                // Telemetry acceptor component
+                                "TELEMETRY_ACCEPTOR",
+                                // Vcenter
+                                "VCENTER",
+                                // VCF Operations
+                                "VROPS"));
             log.info("Retrieved product release components");
 
             List<String> bundleIdsBeingDownloaded =

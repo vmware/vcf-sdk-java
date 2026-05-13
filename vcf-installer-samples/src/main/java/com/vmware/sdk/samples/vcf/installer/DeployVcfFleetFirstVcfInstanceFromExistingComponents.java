@@ -1,6 +1,6 @@
 /*
  * ******************************************************************
- * Copyright (c) 2025 Broadcom. All Rights Reserved.
+ * Copyright (c) 2025-2026 Broadcom. All Rights Reserved.
  * The term "Broadcom" refers to Broadcom Inc.
  * and/or its subsidiaries.
  *
@@ -11,8 +11,8 @@
 package com.vmware.sdk.samples.vcf.installer;
 
 import static com.vmware.sdk.samples.utils.ssl.SecurityHelper.loadKeystoreOrCreateEmpty;
-import static com.vmware.sdk.samples.vcf.installer.utils.SddcSpecUtil.AUTO_GENERATED_PASSWORD;
-import static com.vmware.sdk.samples.vcf.installer.utils.SddcSpecUtil.hostnameToFqdn;
+import static com.vmware.sdk.samples.vcf.installer.helpers.SddcSpecHelper.AUTO_GENERATED_PASSWORD;
+import static com.vmware.sdk.samples.vcf.installer.helpers.SddcSpecHelper.hostnameToFqdn;
 
 import java.security.KeyStore;
 import java.util.List;
@@ -21,10 +21,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vmware.sdk.samples.utils.SampleCommandLineParser;
-import com.vmware.sdk.samples.vcf.installer.utils.SddcSpecUtil;
+import com.vmware.sdk.samples.vcf.installer.helpers.SddcSpecHelper;
 import com.vmware.sdk.vcf.installer.model.SddcSpec;
 import com.vmware.sdk.vcf.installer.model.SddcTask;
 import com.vmware.sdk.vcf.installer.model.Validation;
+import com.vmware.sdk.vcf.installer.model.IPv4Pool;
+import com.vmware.sdk.vcf.installer.model.IPv6Pool;
 import com.vmware.sdk.vcf.installer.utils.MiscUtil;
 import com.vmware.sdk.vcf.installer.utils.SddcTaskUtil;
 import com.vmware.sdk.vcf.installer.utils.VcfInstallerClientFactory;
@@ -34,6 +36,7 @@ import com.vmware.vapi.client.ApiClient;
 
 /**
  * Demonstrates how to deploy new VCF Fleet with first VCF Instance in it, reusing existing Vcenter and NSX-T. <br>
+ * In addition to that deploy VSP components.
  * Prerequisites for successful deployment:
  *
  * <ol>
@@ -70,30 +73,29 @@ public class DeployVcfFleetFirstVcfInstanceFromExistingComponents {
     /** REQUIRED: Comma separated list of NTP servers used when deploying SDDC Manager appliance. */
     public static String[] ntpServers = {};
 
-    /** REQUIRED: Hostname or FQDN of the VCF Operations Fleet Management that will be deployed. */
-    public static String vcfOpsFleetManagementFqdn = "vcfops";
-
     /** REQUIRED: Hostname or FQDN of the VCF Operations that will be deployed. */
     public static String vcfOpsFqdn = "vcfops1";
 
     /**
      * OPTIONAL: Hostname or FQDN of the VCF Automation that will be deployed. If left null along with
-     * {@link #vcfAutomationPoolIpRangeStart} and {@link #vcfAutomationPoolIpRangeEnd} - VCF Automation deployment is
+     * {@link #vcfAutomationIpv4Addresses} and {@link #vcfAutomationPlatformFqdn} - VCF Automation deployment is
      * skipped.
      */
     public static String vcfAutomationFqdn = null;
 
     /**
-     * OPTIONAL: Start of the IP pool range of the VCF Automation. If left null along with {@link #vcfAutomationFqdn}
-     * and {@link #vcfAutomationPoolIpRangeEnd} - VCF Automation deployment is skipped.
+     * OPTIONAL: VCF Automation IPv4 addresses. If left null along with {@link #vcfAutomationFqdn}
+     * and {@link #vcfAutomationPlatformFqdn} VCF Automation deployment is skipped.
      */
-    public static String vcfAutomationPoolIpRangeStart = null;
+    public static String[] vcfAutomationIpv4Addresses = null;
 
     /**
-     * OPTIONAL: End of the IP pool range of the VCF Automation. If left null along with {@link #vcfAutomationFqdn} and
-     * {@link #vcfAutomationPoolIpRangeStart} - VCF Automation deployment is skipped.
+     * OPTIONAL: Hostname or FQDN of the VCF Automation platform that will be deployed.
+     * If left null along with {@link #vcfAutomationFqdn} and {@link #vcfAutomationIpv4Addresses}
+     * VCF Automation deployment is skipped.
+     *
      */
-    public static String vcfAutomationPoolIpRangeEnd = null;
+    public static String vcfAutomationPlatformFqdn = null;
 
     /** REQUIRED: Hostname or FQDN of the VCF Operations Collector that will be deployed. */
     public static String vcfOpsCollectorFqdn = "vcfopscp";
@@ -152,6 +154,140 @@ public class DeployVcfFleetFirstVcfInstanceFromExistingComponents {
      */
     public static String deploymentSpecSaveFilePath = null;
 
+    /**
+     * REQUIRED: VCF Identity Broker hostname.
+     */
+    public static String vidbHostname = "vidb.vcf.local";
+
+    /**
+     * OPTIONAL: VCF Identity Broker version.
+     */
+    public static String vidbVersion = null;
+
+    /**
+     * OPTIONAL: VCF Identity Broker size.
+     */
+    public static String vidbSize = null;
+
+    /**
+     * REQUIRED: VCF Services Platform fqdn.
+     */
+    public static String vspPlatformFqdn = "vsp1.vcf.local";
+
+    /**
+     * OPTIONAL: VCF Services Platform system user password. If blank the password will be auto-generated.
+     */
+    public static String vspSystemUserPassword = null;
+
+    /**
+     * OPTIONAL: VCF Services Platform IPv4 cidr. All IPv4 fields are optional,
+     * however IPv4Pool is required for the VCF Services Platform cluster spec.
+     * Either provide vspIPv4Addresses or provide vspIPv4Cidr, or
+     * vspIPv4StartIpAddress and vspIPv4EndIpAddress.
+     */
+    public static String vspIPv4Cidr = null;
+
+    /**
+     * OPTIONAL: VCF Services Platform IPv4 start ip address. All IPv4 fields are optional,
+     * however IPv4Pool is required for the VCF Services Platform cluster spec.
+     * Either provide vspIPv4Addresses or provide vspIPv4Cidr, or
+     * vspIPv4StartIpAddress and vspIPv4EndIpAddress.
+     */
+    public static String vspIPv4StartIpAddress = null;
+
+    /**
+     * OPTIONAL: VCF Services Platform IPv4 end ip address. All IPv4 fields are optional,
+     * however IPv4Pool is required for the VCF Services Platform cluster spec.
+     * Either provide vspIPv4Addresses or provide vspIPv4Cidr, or
+     * vspIPv4StartIpAddress and vspIPv4EndIpAddress.
+     */
+    public static String vspIPv4EndIpAddress = null;
+
+    /**
+     * OPTIONAL: VCF Services Platform IPv4 addressses. All IPv4 fields are optional,
+     * however IPv4Pool is required for the VCF Services Platform cluster spec.
+     * Either provide vspIPv4Addresses or provide vspIPv4Cidr, or
+     * vspIPv4StartIpAddress and vspIPv4EndIpAddress.
+     */
+    public static String[] vspIPv4Addresses = null;
+
+    /**
+     * OPTIONAL: VCF Services Platform IPv4 excluded addresses.
+     */
+    public static String[] vspIPv4ExcludedAddresses = null;
+
+    /**
+     * OPTIONAL: VCF Services Platform IPv6 cidr.
+     */
+    public static String vspIPv6Cidr = null;
+
+    /**
+     * OPTIONAL: VCF Services Platform IPv6 start ip address.
+     */
+    public static String vspIPv6StartIpAddress = null;
+
+    /**
+     * OPTIONAL: VCF Services Platform IPv6 end ip address.
+     */
+    public static String vspIPv6EndIpAddress = null;
+
+    /**
+     * OPTIONAL: VCF Services Platform IPv6 addresses.
+     */
+    public static String[] vspIPv6Addresses = null;
+
+    /**
+     * OPTIONAL: VCF Services Platform IPv6 excluded addresses.
+     */
+    public static String[] vspIPv6ExcludedAddresses = null;
+
+    /**
+     * OPTIONAL: VCF Services Platform size.
+     */
+    public static String vspSize = null;
+
+    /**
+     * OPTIONAL: VCF Services Platform internal cluster CIDR IPv4.
+     */
+    public static String vspInternalClusterCidrIPv4 = null;
+
+    /**
+     * OPTIONAL: VCF Services Platform internal cluster CIDR IPv6.
+     */
+    public static String vspInternalClusterCidrIPv6 = null;
+
+    /**
+     * REQUIRED: VCF Services Platform instance fqdn.
+     */
+    public static String vspInstanceFqdn = "vsp2.vcf.local";
+
+    /**
+     * OPTIONAL: VCF Services Platform fleet fqdn. VCF Services Platform cluster fleet FQDN.
+     * This should be provided in VVF and primary VCF instance.
+     * If building a secondary VCF instance, do not provide this field.
+     */
+    public static String vspFleetFqdn = null;
+
+    /**
+     * OPTIONAL: VCF Services Platform version.
+     */
+    public static String vspVersion = null;
+
+    /**
+     * REQUIRED: License server hostname.
+     */
+    public static String licenseServerHostname = "ls.vcf.local";
+
+    /**
+     * OPTIONAL: License server version.
+     */
+    public static String licenseServerVersion = null;
+
+    /**
+     * OPTIONAL: License server ssl thumbprint.
+     */
+    public static String licenseServerSslThumbprint = null;
+
     public static void main(String[] args) throws Exception {
         SampleCommandLineParser.load(DeployVcfFleetFirstVcfInstanceFromExistingComponents.class, args);
 
@@ -165,7 +301,7 @@ public class DeployVcfFleetFirstVcfInstanceFromExistingComponents {
                 vcfInstallerClientFactory.createClient(installerFqdn, vcfInstallerAdminPassword, keyStore)) {
 
             SddcSpec sddcSpec = createSddcSpecForNewVcfFleetWithExistingVcenterNsx(client);
-            log.info("Crafted Deployment Spec is: {}", SddcSpecUtil.sddcSpecToJson(sddcSpec));
+            log.info("Crafted Deployment Spec is: {}", SddcSpecHelper.sddcSpecToJson(sddcSpec));
 
             Validations validations = client.createStub(Validations.class);
             Validation validationResult =
@@ -187,7 +323,7 @@ public class DeployVcfFleetFirstVcfInstanceFromExistingComponents {
                 SddcTaskUtil.waitForSddcDeploymentTaskAndFailOnError(sddcs, sddcTaskId);
                 log.info("Finished VCF Fleet deployment task with id: {}", sddcTaskId);
 
-                SddcSpecUtil.saveSddcSpecToFile(client, sddcTaskId, deploymentSpecSaveFilePath);
+                SddcSpecHelper.saveSddcSpecToFile(client, sddcTaskId, deploymentSpecSaveFilePath);
             }
 
             log.info("Sample completed successfully");
@@ -196,40 +332,38 @@ public class DeployVcfFleetFirstVcfInstanceFromExistingComponents {
 
     public static SddcSpec createSddcSpecForNewVcfFleetWithExistingVcenterNsx(ApiClient vcfClient) throws Exception {
         SddcSpec.Builder builder = new SddcSpec.Builder();
-        builder.setWorkflowType(SddcSpecUtil.WorkflowType.VCF.toString());
+        builder.setWorkflowType(SddcSpecHelper.WorkflowType.VCF.toString());
         builder.setCeipEnabled(true);
         builder.setVersion(MiscUtil.getVersionWithoutBuildNumber(vcfClient));
         builder.setNtpServers(List.of(ntpServers));
-        builder.setDnsSpec(SddcSpecUtil.createDnsSpec(dnsDomain, dnsNameserver));
+        builder.setDnsSpec(SddcSpecHelper.createDnsSpec(dnsDomain, dnsNameserver));
 
         // Operations stack
-        // Deploy New VCF Operations Fleet Management
-        builder.setVcfOperationsFleetManagementSpec(SddcSpecUtil.createVcfOperationsFleetManagementSpec(
-                hostnameToFqdn(vcfOpsFleetManagementFqdn, dnsDomain)));
         // Deploy New VCF Operations
-        builder.setVcfOperationsSpec(SddcSpecUtil.createVcfOperationsSpec(hostnameToFqdn(vcfOpsFqdn, dnsDomain)));
+        builder.setVcfOperationsSpec(SddcSpecHelper.createVcfOperationsSpec(hostnameToFqdn(vcfOpsFqdn, dnsDomain)));
         // Deploy New VCF Automation
-        builder.setVcfAutomationSpec(SddcSpecUtil.createSddcVcfAutomationSpec(
+        builder.setVcfAutomationSpec(SddcSpecHelper.createSddcVcfAutomationSpecOnVsp(
                 hostnameToFqdn(vcfAutomationFqdn, dnsDomain),
-                vcfAutomationPoolIpRangeStart,
-                vcfAutomationPoolIpRangeEnd));
+                vcfAutomationIpv4Addresses,
+                vcfAutomationPlatformFqdn,
+                false)); // VCF Automation use existing deployment.
         builder.setVcfOperationsCollectorSpec(
-                SddcSpecUtil.createVcfCollectorSpec(hostnameToFqdn(vcfOpsCollectorFqdn, dnsDomain)));
+                SddcSpecHelper.createVcfCollectorSpec(hostnameToFqdn(vcfOpsCollectorFqdn, dnsDomain)));
 
         // vCenter
         // Use Existing vCenter
-        builder.setVcenterSpec(SddcSpecUtil.createSddcVcenterSpec(
+        builder.setVcenterSpec(SddcSpecHelper.createSddcVcenterSpec(
                 hostnameToFqdn(vCenterFqdn, dnsDomain),
                 vCenterThumbprint,
                 vCenterRootPassword,
                 vCenterAdminSsoUsername,
                 vCenterAdminSsoPassword,
                 trustStorePath));
-        builder.setClusterSpec(SddcSpecUtil.createSddcClusterSpec(sddcId));
+        builder.setClusterSpec(SddcSpecHelper.createSddcClusterSpec(sddcId));
 
         // NSX-T
         // Use Existing New NSX-T
-        builder.setNsxtSpec(SddcSpecUtil.createSddcNsxtSpec(
+        builder.setNsxtSpec(SddcSpecHelper.createSddcNsxtSpec(
                 hostnameToFqdn(nsxFqdn, dnsDomain),
                 hostnameToFqdn(nsxVipFqdn, dnsDomain),
                 nsxThumbprint,
@@ -242,9 +376,39 @@ public class DeployVcfFleetFirstVcfInstanceFromExistingComponents {
         // Skipping ESXi Thumbprint validation for deployments with existing vCenter.
         builder.setSkipEsxThumbprintValidation(true);
 
+        builder.setVidbSpec(SddcSpecHelper.createVidbSpec(vidbHostname, vidbVersion, vidbSize));
+
+        IPv4Pool IPv4Pool = SddcSpecHelper.createVspIPv4Pool(vspIPv4Cidr,
+                                                             vspIPv4StartIpAddress,
+                                                             vspIPv4EndIpAddress,
+                                                             vspIPv4Addresses,
+                                                             vspIPv4ExcludedAddresses);
+
+        IPv6Pool IPv6Pool = SddcSpecHelper.createVspIPv6Pool(vspIPv6Cidr,
+                                                             vspIPv6StartIpAddress,
+                                                             vspIPv6EndIpAddress,
+                                                             vspIPv6Addresses,
+                                                             vspIPv6ExcludedAddresses);
+
+        builder.setVspClusterSpec(SddcSpecHelper.createVspClusterSpec(vspPlatformFqdn,
+                                                                      vspSystemUserPassword,
+                                                                      IPv4Pool,
+                                                                      IPv6Pool,
+                                                                      vspSize,
+                                                                      vspInternalClusterCidrIPv4,
+                                                                      vspInternalClusterCidrIPv6,
+                                                                      vspInstanceFqdn,
+                                                                      vspFleetFqdn,
+                                                                      vspVersion));
+
+        builder.setLicenseServerSpec(SddcSpecHelper.createLicenseServerSpec(licenseServerHostname,
+                                                                            licenseServerVersion,
+                                                                            false, // use existing deployment
+                                                                            licenseServerSslThumbprint));
+
         // SDDC Manager
         builder.setSddcId(sddcId);
-        builder.setSddcManagerSpec(SddcSpecUtil.createSddcManagerSpec(
+        builder.setSddcManagerSpec(SddcSpecHelper.createSddcManagerSpec(
                 hostnameToFqdn(sddcManagerFqdn, dnsDomain),
                 AUTO_GENERATED_PASSWORD, // SDDC Manager Root Password
                 AUTO_GENERATED_PASSWORD, // SDDC Manager Local User Password

@@ -86,6 +86,14 @@ import com.vmware.vsan.sdk.VsanDataEncryptionConfig;
  *
  * <p>Secondly, this sample demonstrates how to get vSAN cluster health status by invoking the QueryClusterHealthSummary
  * API from vSAN health service against VC, then call a vSphere API to configure HCI cluster from vSphere service.
+ *
+ * <p>Sample Prerequisites:
+ *
+ * <ol>
+ *   <li>The sample needs a vCenter server on which the name `Datacenter` (or as specified by the parameter) is not
+ *       being used by any datacenter
+ *   <li>It also needs a list of ESXi hosts on which vSAN has not been configured before.
+ * </ol>
  */
 public class ConfigureHciSample {
     private static final Logger log = LoggerFactory.getLogger(ConfigureHciSample.class);
@@ -390,12 +398,8 @@ public class ConfigureHciSample {
                 }
             }
 
-            List<String> usedVssPnics = new ArrayList<String>();
-            if (usedNicsOnVss.size() >= 1) {
-                //          In this case, usedVnicsOnVss returns an array of type:
-                //          [(str) [ 'vmnic0' ], (str) [ 'vmnic5' ]]
-                //          To obtain the entire list of vmnics, we need to read the first
-                //          element saved in pyVmomi.VmomiSupport.str[].
+            List<String> usedVssPnics = new ArrayList<>();
+            if (!usedNicsOnVss.isEmpty()) {
                 usedVssPnics.add(usedNicsOnVss.get(0));
             }
 

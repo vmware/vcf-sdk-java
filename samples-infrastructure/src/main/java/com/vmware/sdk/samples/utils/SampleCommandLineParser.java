@@ -10,23 +10,16 @@
 
 package com.vmware.sdk.samples.utils;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.logging.LogManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class SampleCommandLineParser {
     private static final Logger log = LoggerFactory.getLogger(SampleCommandLineParser.class);
-
-    static {
-        configureJulLogger();
-    }
 
     /**
      * Simple helper method that loads command-line parameters into the non-final public static fields of the given
@@ -167,21 +160,6 @@ public class SampleCommandLineParser {
             return value.split(",");
         } else {
             throw new IllegalArgumentException("Unsupported field type: " + fieldType);
-        }
-    }
-
-    /**
-     * jaxws-rt uses java.util.logging to log messages. To make it use slf4j + logback, we need to re-configure the
-     * LogManager to add bridge handler (coming from jul-to-slf4j). This makes it possible to use logback.xml to
-     * configure jaxws logging.
-     */
-    public static void configureJulLogger() {
-        try (InputStream is =
-                SampleCommandLineParser.class.getClassLoader().getResourceAsStream("logging.properties")) {
-            LogManager.getLogManager().readConfiguration(is);
-        } catch (IOException e) {
-            System.err.println("Could not configure java.util.logging to use slf4j/logback");
-            e.printStackTrace(System.err);
         }
     }
 }

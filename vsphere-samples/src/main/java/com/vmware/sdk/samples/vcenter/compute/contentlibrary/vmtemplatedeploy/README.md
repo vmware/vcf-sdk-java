@@ -1,11 +1,5 @@
-Author: Masha Orfali (masha.orfali@gmail.com)
-
-Date: April 14, 2021
-
 This directory contains a sample for deploying a virtual machine from a content library item containing a virtual
 machine template.
-
-The sample was tested against vSphere 7.0.1.
 
 ### Testbed Requirement:
 

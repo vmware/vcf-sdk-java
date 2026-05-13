@@ -18,7 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vmware.sdk.samples.sddcm.tasks.TaskHelper;
-import com.vmware.sdk.samples.sddcm.utils.SddcUtil;
+import com.vmware.sdk.samples.sddcm.helpers.SddcHelper;
 import com.vmware.sdk.samples.utils.SampleCommandLineParser;
 import com.vmware.sdk.sddcm.model.HostCommissionSpec;
 import com.vmware.sdk.sddcm.model.NetworkPool;
@@ -65,8 +65,8 @@ public class HostCommissionExample {
     public static void main(String[] args) {
         SampleCommandLineParser.load(HostCommissionExample.class, args);
 
-        try (SddcUtil.SddcFactory factory =
-                new SddcUtil.SddcFactory(sddcManagerHostname, sddcManagerSsoUserName, sddcManagerSsoPassword)) {
+        try (SddcHelper.SddcFactory factory =
+                new SddcHelper.SddcFactory(sddcManagerHostname, sddcManagerSsoUserName, sddcManagerSsoPassword)) {
             V1Factory v1Factory = factory.getV1Factory();
 
             // Get the networkpool details by invoking networkpool API

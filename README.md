@@ -5,88 +5,93 @@
 3. [Using the SDK in custom applications](#using-the-sdk-in-custom-applications)
    1. [Getting started](#getting-started) 
    2. [Fine-grain control over the dependency management](#fine-grain-control-over-the-dependency-management)
-   3. [Migrating existing applications to consume the VCF 9.0 Java SDK](#migrating-existing-applications-to-consume-the-vcf-90-java-sdk)
+   3. [Migrating existing applications to consume VCF Java SDK 9.0 or later](#migrating-existing-applications-to-consume-vcf-java-sdk-90-or-later)
 4. [How to run the samples](#how-to-run-the-samples)
    1. [How to run the vCenter samples](#how-to-run-the-vcenter-samples)
    2. [How to run the vSAN samples](#how-to-run-the-vsan-samples)
    3. [How to run the SDDC Manager samples](#how-to-run-the-sddc-manager-samples)
    4. [How to run the VCF Installer samples](#how-to-run-the-vcf-installer-samples)
+   5. [How to run the VCF Operations samples](#how-to-run-the-vcf-operations-samples)
+      1. [Operations samples](#operations-samples)
+      2. [Log Management samples](#log-management-samples)
+      3. [Operations for Networks samples](#operations-for-networks-samples)
 5. [Logging configuration](#logging-configuration)
 6. [IDE Support](#ide-support)
-7. [API Documentation](#api-documentation)
-8. [SDK Support](#sdk-support)
 
 ## Overview
 
-This repository holds the Java-based VCF 9.0 SDK samples and utilities. Structure:
+This repository holds the Java-based VCF 9.1 SDK samples. Structure:
 
 ```
 [/{module}-samples]
-/utils
-    [/{module}-utils]
 ```
 
-`/{module}` - contains all samples for a VCF component like vSphere, SDDC Manager, etc.
+`/{module}-samples` - contains all samples for a VCF component like vSphere, SDDC Manager, etc. There is also a "samples-runner" module intended for executing the samples from Maven command line and a "samples-infrastructure" module which is used for shared helper code.
 
-`[/{module}-utils]` - contains reference implementation of common API usages.
-Large components may be split into multiple modules e.g. vCenter has sms, spbm, vslm etc.
+The project is built on-top of [Maven](https://maven.apache.org/) 3.9 and uses Multi-Project structure.
 
-The project is built on-top of [Gradle](https://gradle.org/) 8 and uses Multi-Project structure.
-`buildSrc` contains build scripts shared between all subproject.
+ - By default the build is searching for its dependencies on Maven Central where jars are published or your enterprise package repository.
+ - Alternatively, the Maven build can be configured to search for its dependencies from the local machine.
+    - First you should download and unzip the SDK dependencies from ([Broadcom's developer portal](https://developer.broadcom.com/sdks/vcf-java-sdk/latest/)).
+       - The SDK zip file follows the naming convention `vcf-sdk-java-<VERSION>-<BUILD_NUMBER>.zip` where `VERSION` is the released version of the VCF Java SDK and `BUILD_NUMBER` is the build number of the released VCF Java SDK e.g. `vcf-sdk-java-9.1.0.0-24798170.zip`.
+       - You can unzip the dependencies in any folder you wish. For the purposes in this README, the folder with unzipped dependencies will be called just `vcf-sdk-java`.
+    - Note that this is going to provide only the Broadcom owned dependencies (e.g. vim25), but not third-party ones (e.g. jackson).
+    - Such type of use case might require adding an extra maven repository pointing to a self-hosted server.
+    - You can add such a repository in the `settings.xml` file, for example:
+      ```xml
+      <repository>
+          <id>internal-repo</id>
+          <url>https://internal-repo.my-company.com/maven</url>
+      </repository>
+      ```
+         - You also need to add the enterprise package repository or other user-specific Maven settings you might have as a plugin repository. To do this, place something like this just below the `</repositories>` tag:
+            ```xml
+            <pluginRepositories>
+                <pluginRepository>
+                    <id>internal-plugin-repo</id>
+                    <url>https://internal-repo.my-company.com/maven</url>
+                </pluginRepository>
+            </pluginRepositories>
+            ```
+         - Then execute the following command from the samples root folder which configures the Maven build to search for dependencies from a local folder:
+            ```shell
+            ./mvnw install -s settings.xml -Dsdk.repo=vcf-sdk-java
+            ```
+   - Alternatively you can transfer the setting(s) from the provided `settings.xml` to your active one.
 
-`buildSrc/src/main/kotlin/java-conventions.gradle.kts` defines a Gradle convention plugin which controls the Maven
-repositories used to fetch the necessary dependencies. The options are:
-
-- Maven Central - This is the easiest and most commonly used option. It contains VMware's first-party dependencies,
-as well as third party dependencies. Requires Internet access.
-- A `maven` directory placed inside the root of the project - by default it is not part of the Git repository,
-but this is useful for air-gapped environments where dependencies can't be fetched from the Maven Central.
-In such cases the code has been downloaded from Broadcom's developer portal ([vcf-java-sdk.zip](https://developer.broadcom.com/sdks/vcf-java-sdk/latest)).
-Note that this is going to provide only the first-party dependencies (e.g. vim25), but not third-party ones (e.g. jackson).
-Such type of use case might require adding an extra maven repository pointing to a self-hosted server, e.g:
-```kotlin
-maven {
-  url = uri("https://internal-repo.my-company.com/maven")
-}
-```
-
-To build the samples and the utility code execute the following command from the root folder:
-```shell
-./gradlew build
-```
-
-After making code changes, the build might fail because the tasks `spotlessJavaCheck` or `spotlessKotlinGradleCheck`
-detect code style issues. To apply the necessary format rules (line endings, ordering of imports, code conventions, etc.):
-````shell
-./gradlew spotlessApply
-````
 
 ## SDK Compatibility
 
 ### Java compatibility
 
-The SDK is compatible with the following Java LTS versions: 11, 17, 21.
+The SDK is compatible with the following Java LTS versions: 11, 17, 21 and 25.
 It is **_strongly_** recommended to use one of those versions when integrating the SDK into custom applications and when running the samples.
 
 ### VCF component compatibility
 
 The SDK is compatible with the following components:
 
-1. VMware vCenter 8.0 and 9.0
-2. VMware vSAN 8.0 and 9.0
-3. VMware Cloud Foundation 9.0
-   1. SDDC Manager 9.0
-   2. VCF Installer 9.0
+1. vSphere 8.0, 9.0 and 9.1
+2. NSX 9.1
+3. SDDC Manager 9.0 and 9.1
+4. VCF Installer 9.0 and 9.1
+5. VSAN Data protection 9.1
+6. VCF Fleet lifecycle 9.1
+7. VCF SDDC lifecycle 9.1
+8. VCF Operations 9.1
+9. VCF Operations for networks 9.1
+10. VCF Log Management 9.1
+11. VCF Real-time metrics 9.1
 
 ## Using the SDK in custom applications
 
 ### Getting started
 
-The quickest way to declare SDK dependency into custom application is to import VCF SDK BOM and the utility projects demonstrated in the samples:
+The quickest way to declare SDK dependency into custom application is to import VCF SDK BOM and the utility libraries:
 
 Gradle:
 ```kotlin
-implementation(platform("com.vmware.sdk:vcf-sdk-bom:9.0.0.0"))
+implementation(platform("com.vmware.sdk:vcf-sdk-bom:9.1.0.0"))
 implementation("com.vmware.sdk:vsphere-utils")
 implementation("com.vmware.sdk:vcf-installer-utils")
 ```
@@ -100,7 +105,7 @@ Maven:
         <dependency>
             <groupId>com.vmware.sdk</groupId>
             <artifactId>vcf-sdk-bom</artifactId>
-            <version>9.0.0.0</version>
+            <version>9.1.0.0</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
@@ -160,12 +165,12 @@ public class Application {
 
 From application-development perspective, there are 2 ways to declare dependencies: using the \*-utils (e.g. vsphere-utils), which will pull-in the bindings, and will provide various “helpers”, whose usage is shown in the samples, or by declaring dependencies to specific bindings (e.g. vim25) and writing code on top of them. The general recommendation is to use the \*-utils.
 
-From a dependency declaration perspective, there are 2 ways to declare dependencies: by importing the VCF 9.0 SDK BOM and delegating the version management to it or by using the GAV coordinates to declare each dependency individually. Examples:
+From a dependency declaration perspective, there are 2 ways to declare dependencies: by importing the VCF 9.1 SDK BOM and delegating the version management to it or by using the GAV coordinates to declare each dependency individually. Examples:
 
 #### BOM
 
 ```kotlin
-implementation(platform("com.vmware.sdk:vcf-sdk-bom:9.0.0.0"))
+implementation(platform("com.vmware.sdk:vcf-sdk-bom:9.1.0.0"))
 implementation("com.vmware.sdk:vsphere-utils")
 ```
 
@@ -177,7 +182,7 @@ or
         <dependency>
             <groupId>com.vmware.sdk</groupId>
             <artifactId>vcf-sdk-bom</artifactId>
-            <version>9.0.0.0</version>
+            <version>9.1.0.0</version>
             <type>pom</type>
             <scope>import</scope>
         </dependency>
@@ -192,13 +197,13 @@ or
 </dependencies>
 ```
 
-The full list of components in the BOM can be found in the `sdkLibs` catalog of [settings.gradle.kts](settings.gradle.kts).
+The full list of components in the BOM can be found in its `pom.xml` file - `vcf-sdk-java/com/vmware/sdk/vcf-sdk-bom/9.1.0.0/vcf-sdk-bom-9.1.0.0.pom`.
 
 #### GAV
 
 Gradle:
 ```kotlin
-implementation("com.vmware.sdk:vsphere-utils:9.0.0.0")
+implementation("com.vmware.sdk:vsphere-utils:9.1.0.0")
 ```
 or
 
@@ -207,11 +212,11 @@ Maven:
 <dependency>
     <groupId>com.vmware.sdk</groupId>
     <artifactId>vsphere-utils</artifactId>
-    <version>9.0.0.0</version>
+    <version>9.1.0.0</version>
 </dependency>
 ```
 
-### Migrating existing applications to consume the VCF 9.0 Java SDK
+### Migrating existing applications to consume VCF Java SDK 9.0 or later
 
 Please follow the [migration-guide.md](migration-guide.md) for detailed step-by-step migration guide.
 
@@ -220,109 +225,97 @@ Please follow the [migration-guide.md](migration-guide.md) for detailed step-by-
 There are 2 ways to run samples:
 
 - import the project in an IDE and use its "Run" capability in order to execute the main(String[] args) method of the sample
-- using gradle commands through the terminal
+- using Maven commands through the terminal
 
 The basic syntax is this:
 ```shell
-./gradlew :<module>-samples:run -Pexample=fully.qualified.ClassName --args='--arg-name-1 arg-value-1 --arg-name-2 arg-value-2'
+./mvnw compile exec:java -Dexec.mainClass="fully.qualified.ClassName" -Dexec.args='--arg-name-1 arg-value-1 --arg-name-2 arg-value-2'
+```
+
+To run the samples using dependencies from the local machine or an air-gapped environment, you would have to override the Maven repository with the `settings.xml` file:
+```shell
+./mvnw compile exec:java -s settings.xml -Dsdk.repo=vcf-sdk-java -Dexec.mainClass="fully.qualified.ClassName" -Dexec.args='--arg-name-1 arg-value-1 --arg-name-2 arg-value-2'
 ```
 
 ### How to run the vCenter samples
 
 ```shell
-./gradlew :vsphere-samples:run -Pexample=com.vmware.sdk.samples.vcenter.monitoring.performance.PrintCounters --args='--serverAddress vc1.mycompany.com --username Administrator@vsphere.local --password vmware --entitytype VirtualMachine --entityname centos-vm --filename /tmp/counters'
+./mvnw compile exec:java -Dexec.mainClass="com.vmware.sdk.samples.vcenter.monitoring.performance.PrintCounters" -Dexec.args='--serverAddress vc1.mycompany.com --username Administrator@vsphere.local --password vmware --entitytype VirtualMachine --entityname centos-vm --filename /tmp/counters'
 ```
 
 ### How to run the vSAN samples
 
-Example:
 ```shell
- ./gradlew :vsphere-samples:run -Pexample=com.vmware.sdk.samples.vsan.management.VsanVcApiSample --args='--serverAddress vc1.mycompany.com --username Administrator@vsphere.local --password vmware --clusterName Vsan2Cluster'
+./mvnw compile exec:java -Dexec.mainClass="com.vmware.sdk.samples.vsan.management.VsanVcApiSample" -Dexec.args='--serverAddress vc1.mycompany.com --username Administrator@vsphere.local --password vmware --clusterName Vsan2Cluster'
 ```
 
 ### How to run the SDDC Manager samples
 
 ```shell
-./gradlew :sddc-manager-samples:run -Pexample=com.vmware.sdk.samples.sddcm.domains.DeleteDomainExample --args='--sddcManagerHostname sddcm.mycompany.com --domainName domain1 --username Administrator@vsphere.local --password vmware'
+./mvnw compile exec:java -Dexec.mainClass="com.vmware.sdk.samples.sddcm.domains.DeleteDomainExample" -Dexec.args='--sddcManagerHostname sddcm.mycompany.com --domainName domain1 --username Administrator@vsphere.local --password vmware'
 ```
 
 ### How to run the VCF Installer samples
 
 ```shell
-./gradlew :vcf-installer-samples:run -Pexample=com.vmware.sdk.samples.vcf.installer.system.GetApplianceInfo --args='--vcfInstallerServerAddress vcf-installer.mycompany.com --vcfInstallerAdminPassword vmware'
+./mvnw compile exec:java -Dexec.mainClass="com.vmware.sdk.samples.vcf.installer.system.GetApplianceInfo" -Dexec.args='--vcfInstallerServerAddress vcf-installer.mycompany.com --vcfInstallerAdminPassword vmware'
+```
+
+### How to run the VCF Operations samples
+
+#### Operations samples
+
+__Note__: The Operations samples accept their arguments from configuration files. Update client-config.json along with configuration file specific to the sample. Ex: update symptom-and-alert-definition-config.json for SymptomsAndAlertDefinitions.java sample.
+```shell
+./mvnw exec:java -Dexec.mainClass="com.vmware.sdk.samples.ops.symptomdefinitions.SymptomsAndAlertDefinitions" -Dexec.args='src/main/resources/config/client-config.json src/main/resources/config/symptom-and-alert-definition-config.json'
+```
+
+#### Log Management samples
+
+```shell
+./mvnw exec:java -Dexec.mainClass="com.vmware.sdk.samples.ops.logs.BasicSearchExample" -Dexec.args='--username vmware --password vmware --logsHost logs.mycompany.com --logsPort 9543 --opsHost ops.mycompany.com'
+```
+
+#### Operations for Networks samples
+
+```shell
+./mvnw exec:java -Dexec.mainClass="com.vmware.sdk.samples.ops.networks.info.Version" -Dexec.args='--username vmware --password vmware --hostName host.mycompany.com'
 ```
 
 ## Logging configuration
 
-The SDK comes with different flavours of logging.
+All vapi-* dependencies use slf4j-api.
 
-All vapi-* dependencies, as well as projects under utils/*, use slf4j-api.
+vim25, pbm, sms, ssoclient and vslm depend on `cxf` which uses slf4j as well.
 
-vim25, pbm, sms, ssoclient and vslm depend on `jaxws-rt` which uses `java.util.logging`.
+The samples code is also using slf4j for logging and are configuring [Logback](https://logback.qos.ch/) as the logging implementation. This demonstrats how an application can direct its own log statements together with the log statements originating in the VCF SDK modules to the same logging subsytem.
 
-The samples are configured to use [logback](https://logback.qos.ch/) logger.
-samples-infrastructure/src/main/resources has 2 important files:
+samples-infrastructure/src/main/resources has logback.xml - a configuration that provides somewhat sane getting started defaults
 
-- logging.properties - configuration file which is read by
-  `com.vmware.sdk.samples.utils.SampleCommandLineParser`; adds logback support for java.util.logging
-- logback.xml - a configuration that provides somewhat sane getting started defaults, including java.util.logging
-  configuration
-  
 ## IDE support
 
-This repository contains Java projects with multi-project Gradle build and can be used with any IDE which supports these technologies.
+This repository contains Java projects with multi-project Maven build and can be used with any IDE which supports these technologies.
 
 Some specifics about popular Java IDEs are discussed in the following subsections.
 
+### Common for all IDEs in air-gapped environment
+
+You need to copy the `settings.xml` file to another one for IDE purposes, for example `ide_settings.xml`. Then replace `${sdk.repo}` in the `ide_settings.xml` file with the path to the Maven SDK libraries folder.
+
 ### IntelliJ IDEA
 
-Assuming that the IDE has Java/Kotlin/Gradle plugins installed, import the project by pointing to the root or by opening settings.gradle.kts.
+If you have to use dependencies from the local machine or different repository than Maven Central, make sure you override the user settings file from File -> Settings -> Build, Execution, Deployment -> Build Tools -> Maven -> on "User settings file" click "Override" and set the path to the custom `ide_settings.xml` file.
+
+Import the project by pointing to the root.
 
 ### Visual Studio Code
 
-Assuming that the IDE has Java/Kotlin/Gradle plugins installed, import the project by pointing to the root folder.
+If you have to use dependencies from the local machine or different repository than Maven Central, make sure you also configure your Maven VSCode extension to search for dependencies from the local SDK Maven libraries directory by using the custom `ide_settings.xml` file, for example using the `java.configuration.maven.userSettings` option.
+
+Assuming that the IDE has Java and Maven plugins installed, import the project by pointing to the root folder.
 
 ### Eclipse
 
-There are at least two ways to load the projects in Eclipse as explained below.
+If you have to use dependencies from the local machine or different repository than Maven Central, before importing the project into your workspace, click on Window -> Preferences -> Maven -> User Settings -> on "User Settings" set it to the path to the custom `ide_settings.xml` file. 
 
-#### Import as Gradle Projects using Buildship plug-in
-
-1. Make sure Buildship plug-in for Eclipse is installed.
-2. Import the root folder of the repository as Existing Gradle Project.
-
-This will discover the Gradle multi-project structure and create Eclipse projects for it.
-
-#### Generate Eclipse project files using Gradle 'eclipse' plug-in
-
-```shell
-./gradlew build test
-
-./gradlew cleanEclipse eclipse [-Peclipse.classpath.vars]
-```
-
-The first command above ensures all dependencies are downloaded in the Gradle build cache.
-
-The second generates .classpath and .project files. 
-
-Once these are available the root folder of the repository can be imported as Existing Project in Eclipse.
-
-If `-Peclipse.classpath.vars` is used the .classpath files will use paths relative to `VCF_SDK_GRADLE_USER_HOME`. The latter must be declared as Eclipse Classpath Variable pointing to the Gradle user home, which contains the cache with dependencies.
-This might be useful if the source and build trees are remote and Eclipse is accessing them 
-as a mount or network share.
-
-## API Documentation
-### VCF
-* [SDDC Manager](https://developer.broadcom.com/xapis/sddc-manager-api/latest/)
-* [VCF Installer](https://developer.broadcom.com/xapis/vcf-installer-api/latest/)
-* [VMware vSphere REST API Reference documentation](https://developer.broadcom.com/xapis/vsphere-automation-api/latest/)
-* [vSphere Web Services API](https://developer.broadcom.com/xapis/vsphere-web-services-api/latest/)
-* [vSAN](https://developer.broadcom.com/xapis/vsan-management-api/latest/)
-
-## SDK Support
-
-Support details can be referenced under the **SDK and API Support for Commercial and Enterprise Organizations** section at [Broadcom Developer Portal](https://developer.broadcom.com/support).
-
-For community support, please open a [Github issue](https://github.com/vmware/vcf-sdk-java/issues) or start a [Discussion](https://github.com/vmware/vcf-sdk-java/discussions).
-
-
+Import the samples by pointing to the root and importing all subprojects as existing Maven projects.

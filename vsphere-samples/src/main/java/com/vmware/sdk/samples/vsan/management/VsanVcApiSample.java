@@ -70,7 +70,8 @@ public class VsanVcApiSample {
                 log.info("This sample can only be run against vCenter endpoint.");
             }
 
-            ManagedObjectReference clusterMoRef = queryClusterByName(clusterName);
+            ManagedObjectReference clusterMoRef =
+                    propertyCollectorHelper.getMoRefByName(clusterName, CLUSTER_COMPUTE_RESOURCE);
             if (clusterMoRef == null) {
                 log.error("Cannot find cluster: {}", clusterName);
                 return;
@@ -92,27 +93,12 @@ public class VsanVcApiSample {
             // Call Repair cluster objects
             var vsanTask = vsanPort.vsanHealthRepairClusterObjectsImmediate(vsanVcHealthRef, clusterMoRef, null);
 
-            Boolean status = VsanUtil.waitForTasks(propertyCollectorHelper, vsanTask);
+            boolean status = VsanUtil.waitForTasks(propertyCollectorHelper, vsanTask);
             if (status) {
                 log.info("Repairing cluster objects task completed successfully!");
             } else {
                 log.info("Repair cluster objects task failed!");
             }
         }
-    }
-
-    /**
-     * Get the VC cluster instance from the cluster name. It will try to search the cluster under all of VC data centers
-     * and return the first VC cluster matching the give name.
-     *
-     * @return The VC cluster instance. Return null if not found
-     */
-    private static ManagedObjectReference queryClusterByName(String clusterName) {
-        try {
-            return propertyCollectorHelper.getMoRefByName(clusterName, CLUSTER_COMPUTE_RESOURCE);
-        } catch (Exception e) {
-            log.error("Failed to get cluster with error.", e);
-        }
-        return null;
     }
 }

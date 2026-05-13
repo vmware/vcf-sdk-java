@@ -16,7 +16,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vmware.sdk.samples.sddcm.utils.SddcUtil;
+import com.vmware.sdk.samples.sddcm.helpers.SddcHelper;
 import com.vmware.sdk.samples.utils.SampleCommandLineParser;
 import com.vmware.sdk.sddcm.model.IpPool;
 import com.vmware.sdk.sddcm.model.Network;
@@ -74,8 +74,8 @@ public class CreateNetworkPoolExample {
     public static void main(String[] args) {
         SampleCommandLineParser.load(CreateNetworkPoolExample.class, args);
 
-        try (SddcUtil.SddcFactory factory =
-                new SddcUtil.SddcFactory(sddcManagerHostname, sddcManagerSsoUserName, sddcManagerSsoPassword)) {
+        try (SddcHelper.SddcFactory factory =
+                new SddcHelper.SddcFactory(sddcManagerHostname, sddcManagerSsoUserName, sddcManagerSsoPassword)) {
             V1Factory v1Factory = factory.getV1Factory();
 
             // Get the Networkpool spec

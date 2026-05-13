@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright (c) 2025 Broadcom. All Rights Reserved.
+The term "Broadcom" refers to Broadcom Inc. and/or its subsidiaries.
+
+SPDX-License-Identifier: Apache-2.0 -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.vmware.sdk</groupId>
+        <artifactId>vcf-java-sdk-samples</artifactId>
+        <version>9.1.0.0</version>
+    </parent>
+
+    <artifactId>nsx-samples</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>${vcf.sdk.groupId}</groupId>
+            <artifactId>samples-infrastructure</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${vcf.sdk.groupId}</groupId>
+            <artifactId>nsx</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>

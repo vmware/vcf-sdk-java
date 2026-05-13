@@ -21,27 +21,30 @@ import java.net.URI;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.config.Registry;
-import org.apache.http.config.RegistryBuilder;
-import org.apache.http.conn.socket.ConnectionSocketFactory;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.entity.FileEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
-import org.apache.http.util.EntityUtils;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.classic.methods.HttpPut;
+import org.apache.hc.client5.http.classic.methods.HttpUriRequest;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.socket.ConnectionSocketFactory;
+import org.apache.hc.client5.http.ssl.SSLConnectionSocketFactory;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.HttpResponse;
+import org.apache.hc.core5.http.HttpStatus;
+import org.apache.hc.core5.http.ParseException;
+import org.apache.hc.core5.http.config.Registry;
+import org.apache.hc.core5.http.config.RegistryBuilder;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.http.io.entity.FileEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,9 +75,8 @@ public class HttpClient {
             connectionManager.setMaxTotal(600);
 
             RequestConfig config = RequestConfig.custom()
-                    .setConnectTimeout(5 * 1000)
-                    .setConnectionRequestTimeout(5 * 1000)
-                    .setSocketTimeout(infiniteSocketTimeout ? -1 : 60 * 1000)
+                    .setConnectTimeout(5 * 1000, TimeUnit.MILLISECONDS)
+                    .setResponseTimeout(infiniteSocketTimeout ? -1 : 60 * 1000, TimeUnit.MILLISECONDS)
                     .build();
 
             HttpClientBuilder clientBuilder = HttpClientBuilder.create();
@@ -95,9 +97,9 @@ public class HttpClient {
     public void upload(File file, long startByte, long endByte, String url, Header header) {
         HttpPut httpPut = new HttpPut(url);
         try {
-            FileEntity fileEntity = new FileEntity(file);
+            FileEntity fileEntity = new FileEntity(file, null);
             httpPut.setEntity(fileEntity);
-            HttpResponse httpResponse = executeRequest(httpPut);
+            CloseableHttpResponse httpResponse = executeRequest(httpPut);
             validateResponse(httpResponse, HttpStatus.SC_OK);
         } catch (FileNotFoundException e) {
             throw new RuntimeException("FileNotFoundException for file" + file.getName(), e);
@@ -120,7 +122,7 @@ public class HttpClient {
         HttpGet httpGet = new HttpGet(url);
         try {
 
-            HttpResponse httpResponse = client.execute(httpGet);
+            CloseableHttpResponse httpResponse = client.execute(httpGet);
             HttpEntity responseEntity = httpResponse.getEntity();
             InputStream inputStream = null;
             if (responseEntity != null) {
@@ -142,8 +144,9 @@ public class HttpClient {
      * @param url The URL to retrieve
      * @param filename the local file to save to
      * @return response the content from the response
+     * @throws ParseException if the response cannot be parsed
      */
-    public String getFile(String url, String filename) {
+    public String getFile(String url, String filename) throws ParseException {
 
         try {
             URI.create(url).toURL();
@@ -152,9 +155,7 @@ public class HttpClient {
         }
 
         HttpGet httpGet = new HttpGet(url);
-        try {
-
-            HttpResponse httpResponse = client.execute(httpGet);
+        try (CloseableHttpResponse httpResponse = client.execute(httpGet)) {
             HttpEntity responseEntity = httpResponse.getEntity();
             String response = "";
             if (responseEntity != null) {
@@ -178,10 +179,10 @@ public class HttpClient {
         dataoutputstream.close();
     }
 
-    private HttpResponse executeRequest(HttpUriRequest httpRequest) throws IOException {
+    private CloseableHttpResponse executeRequest(HttpUriRequest httpRequest) throws IOException {
         int retries = 3;
         boolean shouldBreak = true;
-        HttpResponse response = null;
+        CloseableHttpResponse response = null;
         final String LOGIN_FAILED_MSG = "Failed to login";
         while (retries-- >= 0) {
             try {
@@ -210,6 +211,8 @@ public class HttpClient {
                 } catch (InterruptedException e) {
                     throw new RuntimeException(LOGIN_FAILED_MSG, e);
                 }
+            } finally {
+                response.close();
             }
             if (shouldBreak) {
                 break;
@@ -223,8 +226,8 @@ public class HttpClient {
      *
      * @param response {@link HttpResponse}
      */
-    private void validateResponse(HttpResponse response, int statusCode) {
-        int actualStatusCode = response.getStatusLine().getStatusCode();
+    private void validateResponse(CloseableHttpResponse response, int statusCode) {
+        int actualStatusCode = response.getCode();
         if (actualStatusCode == statusCode) {
             return;
         }

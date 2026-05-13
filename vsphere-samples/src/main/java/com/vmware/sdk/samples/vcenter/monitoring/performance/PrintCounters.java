@@ -115,44 +115,46 @@ public class PrintCounters {
         if (moRef != null) {
             Set<?> ids = getPerfIdsAvailable(vimPort, perfManager, moRef);
 
-            PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(filename, StandardCharsets.UTF_8)));
-            if (counterInfos != null) {
-                out.println("<perf-counters>");
-                for (PerfCounterInfo pci : counterInfos) {
-                    Integer id = pci.getKey();
-                    if (ids.contains(id)) {
-                        out.print("  <perf-counter key=\"");
-                        out.print(id);
-                        out.print("\" ");
+            try (PrintWriter out =
+                    new PrintWriter(new BufferedWriter(new FileWriter(filename, StandardCharsets.UTF_8)))) {
+                if (counterInfos != null) {
+                    out.println("<perf-counters>");
+                    for (PerfCounterInfo pci : counterInfos) {
+                        Integer id = pci.getKey();
+                        if (ids.contains(id)) {
+                            out.print("  <perf-counter key=\"");
+                            out.print(id);
+                            out.print("\" ");
 
-                        out.print("rollupType=\"");
-                        out.print(pci.getRollupType());
-                        out.print("\" ");
+                            out.print("rollupType=\"");
+                            out.print(pci.getRollupType());
+                            out.print("\" ");
 
-                        out.print("statsType=\"");
-                        out.print(pci.getStatsType());
-                        out.println("\">");
+                            out.print("statsType=\"");
+                            out.print(pci.getStatsType());
+                            out.println("\">");
 
-                        printElementDescription(out, "groupInfo", pci.getGroupInfo());
-                        printElementDescription(out, "nameInfo", pci.getNameInfo());
-                        printElementDescription(out, "unitInfo", pci.getUnitInfo());
+                            printElementDescription(out, "groupInfo", pci.getGroupInfo());
+                            printElementDescription(out, "nameInfo", pci.getNameInfo());
+                            printElementDescription(out, "unitInfo", pci.getUnitInfo());
 
-                        out.println("    <entity type=\"" + entityType + "\"/>");
-                        List<Integer> listint = pci.getAssociatedCounterId();
-                        int[] ac = new int[listint.size()];
-                        for (int i = 0; i < listint.size(); i++) {
-                            ac[i] = listint.get(i);
+                            out.println("    <entity type=\"" + entityType + "\"/>");
+                            List<Integer> listint = pci.getAssociatedCounterId();
+                            int[] ac = new int[listint.size()];
+                            for (int i = 0; i < listint.size(); i++) {
+                                ac[i] = listint.get(i);
+                            }
+
+                            for (int i : ac) {
+                                out.println("    <associatedCounter>" + i + "</associatedCounter>");
+                            }
+                            out.println("  </perf-counter>");
                         }
-
-                        for (int i : ac) {
-                            out.println("    <associatedCounter>" + i + "</associatedCounter>");
-                        }
-                        out.println("  </perf-counter>");
                     }
+                    out.println("</perf-counters>");
+                    out.flush();
+                    out.close();
                 }
-                out.println("</perf-counters>");
-                out.flush();
-                out.close();
             }
             log.info("Check {} for Print Counters", filename);
         } else {

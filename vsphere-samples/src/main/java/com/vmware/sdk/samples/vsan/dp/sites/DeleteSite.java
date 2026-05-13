@@ -20,13 +20,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vmware.sdk.samples.utils.SampleCommandLineParser;
+import com.vmware.sdk.samples.helpers.TaskHelper;
 import com.vmware.sdk.utils.wsdl.SimpleHttpConfigurer;
 import com.vmware.sdk.vsphere.utils.vsan.dp.SnapshotServiceClient;
 import com.vmware.snapservice.Sites;
 import com.vmware.snapservice.SitesTypes;
-import com.vmware.snapservice.Tasks;
-import com.vmware.snapservice.tasks.Info;
-import com.vmware.snapservice.tasks.Status;
 import com.vmware.vapi.protocol.HttpConfiguration;
 
 /**
@@ -82,7 +80,7 @@ public class DeleteSite {
 
         log.info("deleteSiteTaskId: {}", deleteSiteTaskId);
 
-        waitForSnapshotServiceTask(snapshotServiceClient, deleteSiteTaskId);
+        TaskHelper.waitForSnapshotServiceTask(snapshotServiceClient, deleteSiteTaskId);
     }
 
     public static String deleteTask(
@@ -94,26 +92,4 @@ public class DeleteSite {
         return sites.delete_Task(siteId, spec, options);
     }
 
-    private static void waitForSnapshotServiceTask(SnapshotServiceClient snapshotServiceClient, String ssTaskId)
-            throws InterruptedException {
-        Tasks tasks = snapshotServiceClient.createStub(Tasks.class);
-        while (true) {
-            Info taskInfo = tasks.get(ssTaskId);
-
-            if (taskInfo.getStatus() == Status.SUCCEEDED) {
-                log.info("# Task {} succeeds: {}", ssTaskId, taskInfo);
-                return;
-            } else if (taskInfo.getStatus() == Status.FAILED) {
-                log.error("# Task {} failed.", taskInfo.getDescription().getId());
-                log.error("Error: {}", taskInfo.getError().getMessage());
-                return;
-            } else {
-                log.info(
-                        "# Task {} progress: {}",
-                        taskInfo.getDescription().getId(),
-                        taskInfo.getProgress().getCompleted());
-                java.util.concurrent.TimeUnit.SECONDS.sleep(5);
-            }
-        }
-    }
 }

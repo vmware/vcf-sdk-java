@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
-import com.vmware.sdk.samples.helpers.SecurityUtil;
+import com.vmware.sdk.samples.helpers.SecurityHelper;
 import com.vmware.sdk.samples.utils.SampleCommandLineParser;
 import com.vmware.sdk.ssoclient.utils.SoapUtils;
 import com.vmware.sdk.utils.ssl.InsecureTrustManager;
@@ -56,7 +56,7 @@ public class RenewTokenSample {
          * be used in the sample. This is to be used for ONLY development
          * purpose.
          */
-        SecurityUtil securityUtil = SecurityUtil.loadFromDefaultFiles();
+        SecurityHelper helper = SecurityHelper.loadFromDefaultFiles();
 
         /* Acquire a HoK token using username & password */
         Element token = acquireHokTokenWithUserCredentials(
@@ -65,8 +65,8 @@ public class RenewTokenSample {
                 stsPortConfigurer,
                 username,
                 password,
-                securityUtil.getPrivateKey(),
-                securityUtil.getUserCert(),
+                helper.getPrivateKey(),
+                helper.getUserCert(),
                 tokenDuration);
 
         log.info("Original token issued: {}", SoapUtils.samlTokenToString(token));
@@ -77,8 +77,8 @@ public class RenewTokenSample {
                 DEFAULT_PORT,
                 stsPortConfigurer,
                 token,
-                securityUtil.getPrivateKey(),
-                securityUtil.getUserCert(),
+                helper.getPrivateKey(),
+                helper.getUserCert(),
                 tokenDuration);
 
         log.info("Renewed token: {}", SoapUtils.samlTokenToString(renewedToken));

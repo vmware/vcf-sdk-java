@@ -23,24 +23,22 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.vmware.sdk.samples.utils.SampleCommandLineParser;
+import com.vmware.sdk.samples.helpers.TaskHelper;
 import com.vmware.sdk.utils.wsdl.SimpleHttpConfigurer;
 import com.vmware.sdk.vsphere.utils.vsan.dp.SnapshotServiceClient;
+import com.vmware.snapservice.DailyRetention;
+import com.vmware.snapservice.LongTermRetention;
 import com.vmware.snapservice.ProtectionGroupSpec;
 import com.vmware.snapservice.ReplicationPolicy;
-import com.vmware.snapservice.RetentionConfig;
 import com.vmware.snapservice.RetentionPeriod;
 import com.vmware.snapservice.RetentionPolicy;
 import com.vmware.snapservice.ShortTermRetention;
 import com.vmware.snapservice.SnapshotPolicy;
 import com.vmware.snapservice.SnapshotSchedule;
 import com.vmware.snapservice.TargetEntities;
-import com.vmware.snapservice.Tasks;
-import com.vmware.snapservice.TimeFrequency;
 import com.vmware.snapservice.TimePeriod;
 import com.vmware.snapservice.TimeUnit;
 import com.vmware.snapservice.clusters.ProtectionGroups;
-import com.vmware.snapservice.tasks.Info;
-import com.vmware.snapservice.tasks.Status;
 import com.vmware.vapi.protocol.HttpConfiguration;
 
 /**
@@ -85,7 +83,7 @@ public class CreateProtectionGroup {
 
         String taskId = createTask(snapshotServiceClient, clusterId, clusterPairId, vmIds);
         log.info("taskId: {}", taskId);
-        waitForSnapshotServiceTask(snapshotServiceClient, taskId);
+        TaskHelper.waitForSnapshotServiceTask(snapshotServiceClient, taskId);
     }
 
     public static String createTask(
@@ -100,9 +98,10 @@ public class CreateProtectionGroup {
         TimePeriod.Builder tpBldr = new TimePeriod.Builder(TimeUnit.MINUTE, 5);
         ShortTermRetention.Builder stBldr = new ShortTermRetention.Builder(5);
         RetentionPolicy.Builder rpBldr = new RetentionPolicy.Builder(stBldr.build());
-        RetentionConfig.Builder longTermRetentionConfigBldr =
-                new RetentionConfig.Builder(TimeFrequency.DAILY, new TimePeriod.Builder(TimeUnit.DAY, 1).build());
-        rpBldr.setLongTerm(List.of(longTermRetentionConfigBldr.build()));
+        LongTermRetention.Builder longTermRetentionConfigBldr = new LongTermRetention.Builder();
+        DailyRetention dailyRetention = new DailyRetention();
+        dailyRetention.setRetention(new TimePeriod.Builder(TimeUnit.DAY, 1).build());
+        rpBldr.setLongTerm(longTermRetentionConfigBldr.setDaily(dailyRetention).build());
 
         ReplicationPolicy.Builder replicationBldr = new ReplicationPolicy.Builder(tpBldr.build(), rpBldr.build());
         replicationBldr.setClusterPair(clusterPairId);
@@ -121,26 +120,4 @@ public class CreateProtectionGroup {
         return protectionGroups.create_Task(clusterId, pgBldr.build());
     }
 
-    private static void waitForSnapshotServiceTask(SnapshotServiceClient snapshotServiceClient, String ssTaskId)
-            throws InterruptedException {
-        Tasks tasks = snapshotServiceClient.createStub(Tasks.class);
-        while (true) {
-            Info taskInfo = tasks.get(ssTaskId);
-
-            if (taskInfo.getStatus() == Status.SUCCEEDED) {
-                log.info("# Task {} succeeds: {}", ssTaskId, taskInfo);
-                return;
-            } else if (taskInfo.getStatus() == Status.FAILED) {
-                log.error("# Task {} failed.", taskInfo.getDescription().getId());
-                log.error("Error: {}", taskInfo.getError().getMessage());
-                return;
-            } else {
-                log.info(
-                        "# Task {} progress: {}",
-                        taskInfo.getDescription().getId(),
-                        taskInfo.getProgress().getCompleted());
-                java.util.concurrent.TimeUnit.SECONDS.sleep(5);
-            }
-        }
-    }
 }

@@ -1,8 +1,9 @@
 /*
  * ******************************************************************
- * Copyright (c) 2025 Broadcom. All Rights Reserved.
- * The term "Broadcom" refers to Broadcom Inc.
+ * Copyright (c) 2025-2026 Broadcom. All Rights Reserved.
+ * Broadcom Confidential. The term "Broadcom" refers to Broadcom Inc.
  * and/or its subsidiaries.
+ * The term "Broadcom" refers to Broadcom Inc.
  *
  * SPDX-License-Identifier: Apache-2.0
  * ******************************************************************
@@ -29,7 +30,8 @@ import com.vmware.vapi.client.ApiClient;
 
 /**
  * Demonstrates how to configure online depot and download bundles necessary for deploying VVF assuming you have
- * existing VCF Operations. This includes the following components: vCenter.
+ * existing VCF Operations. This includes the following components: vCenter, VCF fleet lcm, Fleet depot service,
+ * Fleet SDDC Lcm.
  */
 public class DownloadBundlesVvfInstanceExistingVcfOps {
     private static final Logger log = LoggerFactory.getLogger(DownloadBundlesVvfInstanceExistingVcfOps.class);
@@ -90,7 +92,21 @@ public class DownloadBundlesVvfInstanceExistingVcfOps {
 
             List<ProductReleaseComponent> latestReleaseComponentsToDownload =
                     downloadLatestBundlesUtil.getLatestProductReleaseComponents(
-                            "VVF", versionWithoutBuildNumber, Set.of("VCENTER"));
+                            "VVF", versionWithoutBuildNumber, Set.of(
+                                                                  // VCF Services Platform
+                                                                  "VSP",
+                                                                  // Telemetry acceptor component
+                                                                  "TELEMETRY_ACCEPTOR",
+                                                                  // Vcenter
+                                                                  "VCENTER",
+                                                                  // VCF fleet lcm
+                                                                  "VCF_FLEET_LCM",
+                                                                  // Fleet depot service
+                                                                  "DEPOT_SERVICE",
+                                                                  // License server component
+                                                                  "VCF_LICENSE_SERVER",
+                                                                  // Fleet SDDC Lcm
+                                                                  "VCF_SDDC_LCM"));
             log.info("Retrieved product release components");
 
             List<String> bundleIdsBeingDownloaded =

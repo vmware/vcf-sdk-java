@@ -1,6 +1,6 @@
 /*
  * ******************************************************************
- * Copyright (c) 2025 Broadcom. All Rights Reserved.
+ * Copyright (c) 2026 Broadcom. All Rights Reserved.
  * The term "Broadcom" refers to Broadcom Inc.
  * and/or its subsidiaries.
  *
@@ -17,7 +17,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.vmware.sdk.samples.sddcm.utils.SddcUtil;
+import com.vmware.sdk.samples.sddcm.helpers.SddcHelper;
 import com.vmware.sdk.sddcm.model.Task;
 import com.vmware.sdk.sddcm.v1.Tasks;
 
@@ -80,7 +80,14 @@ public class TaskHelper {
             for (Task task : taskList) {
                 task = taskService.getTask(task.getId()).invoke().get();
                 log.debug("Task Status : {}", task.getStatus());
-                if (task.getStatus().equalsIgnoreCase(TaskStatus.IN_PROGRESS.getStatus())) {
+                if (task.getStatus().equalsIgnoreCase(TaskStatus.IN_PROGRESS.name())
+                || task.getStatus().equalsIgnoreCase(TaskStatus.IN_PROGRESS.getStatus())
+                || task.getStatus().equalsIgnoreCase(TaskStatus.PENDING.name())
+                || task.getStatus().equalsIgnoreCase(TaskStatus.PENDING.getStatus())
+                || task.getStatus().equalsIgnoreCase(TaskStatus.QUEUED.name())
+                || task.getStatus().equalsIgnoreCase(TaskStatus.QUEUED.getStatus())
+                || task.getStatus().equalsIgnoreCase(TaskStatus.ACTIVATING.name())
+                || task.getStatus().equalsIgnoreCase(TaskStatus.ACTIVATING.getStatus())) {
                     log.info("Task Name:- {}, Id:- {}, Status:- {}", task.getName(), task.getId(), task.getStatus());
                 } else if (task.getStatus().equalsIgnoreCase(TaskStatus.FAILED.getStatus())) {
                     log.error("Task Name:- {}, Id:- {}, Status:- {}", task.getName(), task.getId(), task.getStatus());
@@ -106,8 +113,14 @@ public class TaskHelper {
             }
             for (Task task : taskList) {
                 task = taskService.getTask(task.getId()).invoke().get();
-                if (task.getStatus().equalsIgnoreCase(TaskStatus.IN_PROGRESS.getStatus())
-                        || task.getStatus().equalsIgnoreCase(TaskStatus.PENDING.getStatus())) {
+                if (task.getStatus().equalsIgnoreCase(TaskStatus.IN_PROGRESS.name())
+                        || task.getStatus().equalsIgnoreCase(TaskStatus.IN_PROGRESS.getStatus())
+                        || task.getStatus().equalsIgnoreCase(TaskStatus.PENDING.name())
+                        || task.getStatus().equalsIgnoreCase(TaskStatus.PENDING.getStatus())
+                        || task.getStatus().equalsIgnoreCase(TaskStatus.QUEUED.name())
+                        || task.getStatus().equalsIgnoreCase(TaskStatus.QUEUED.getStatus())
+                        || task.getStatus().equalsIgnoreCase(TaskStatus.ACTIVATING.name())
+                        || task.getStatus().equalsIgnoreCase(TaskStatus.ACTIVATING.getStatus())) {
                     flag = false;
                     break;
                 } else {
@@ -145,13 +158,20 @@ public class TaskHelper {
         Thread.sleep(TASK_WAIT_TIME * 1000);
         boolean flag = taskList.isEmpty();
         while (!flag) {
-            try (SddcUtil.SddcFactory factory =
-                    new SddcUtil.SddcFactory(sddcManagerHostname, sddcManagerSsoUserName, sddcManagerSsoPassword)) {
+            try (SddcHelper.SddcFactory factory =
+                    new SddcHelper.SddcFactory(sddcManagerHostname, sddcManagerSsoUserName, sddcManagerSsoPassword)) {
                 Tasks taskService = factory.getV1Factory().tasksService();
                 for (Task task : taskList) {
                     task = taskService.getTask(task.getId()).invoke().get();
                     log.debug("Task status : {}", task.getStatus());
-                    if (task.getStatus().equalsIgnoreCase(TaskStatus.IN_PROGRESS.getStatus())) {
+                    if (task.getStatus().equalsIgnoreCase(TaskStatus.IN_PROGRESS.name())
+                            || task.getStatus().equalsIgnoreCase(TaskStatus.IN_PROGRESS.getStatus())
+                            || task.getStatus().equalsIgnoreCase(TaskStatus.PENDING.name())
+                            || task.getStatus().equalsIgnoreCase(TaskStatus.PENDING.getStatus())
+                            || task.getStatus().equalsIgnoreCase(TaskStatus.QUEUED.name())
+                            || task.getStatus().equalsIgnoreCase(TaskStatus.QUEUED.getStatus())
+                            || task.getStatus().equalsIgnoreCase(TaskStatus.ACTIVATING.name())
+                            || task.getStatus().equalsIgnoreCase(TaskStatus.ACTIVATING.getStatus())) {
                         log.info(
                                 "Task name:- {}, Id:- {}, Status:- {}", task.getName(), task.getId(), task.getStatus());
                     } else if (task.getStatus().equalsIgnoreCase(TaskStatus.FAILED.getStatus())) {
@@ -179,8 +199,14 @@ public class TaskHelper {
                 for (Task task : taskList) {
                     task = taskService.getTask(task.getId()).invoke().get();
                     log.debug("Task status : {} for id : {}", task.getStatus(), task.getId());
-                    if (task.getStatus().equalsIgnoreCase(TaskStatus.IN_PROGRESS.getStatus())
-                            || task.getStatus().equalsIgnoreCase(TaskStatus.PENDING.getStatus())) {
+                    if (task.getStatus().equalsIgnoreCase(TaskStatus.IN_PROGRESS.name())
+                            || task.getStatus().equalsIgnoreCase(TaskStatus.IN_PROGRESS.getStatus())
+                            || task.getStatus().equalsIgnoreCase(TaskStatus.PENDING.name())
+                            || task.getStatus().equalsIgnoreCase(TaskStatus.PENDING.getStatus())
+                            || task.getStatus().equalsIgnoreCase(TaskStatus.QUEUED.name())
+                            || task.getStatus().equalsIgnoreCase(TaskStatus.QUEUED.getStatus())
+                            || task.getStatus().equalsIgnoreCase(TaskStatus.ACTIVATING.name())
+                            || task.getStatus().equalsIgnoreCase(TaskStatus.ACTIVATING.getStatus())) {
                         flag = false;
                         break;
                     } else {

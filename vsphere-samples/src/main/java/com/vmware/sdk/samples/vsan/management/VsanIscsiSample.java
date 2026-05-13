@@ -70,7 +70,8 @@ public class VsanIscsiSample {
             propertyCollectorHelper = new PropertyCollectorHelper(vimPort, serviceContent);
 
             // Here is an example of how to access vCenter side vSAN Health Service API.
-            ManagedObjectReference clusterMoRef = queryClusterByName(clusterName);
+            ManagedObjectReference clusterMoRef =
+                    propertyCollectorHelper.getMoRefByName(clusterName, CLUSTER_COMPUTE_RESOURCE);
             if (clusterMoRef == null) {
                 log.error("Cannot find vCenter cluster {}", clusterName);
                 return;
@@ -85,7 +86,7 @@ public class VsanIscsiSample {
             enableSpec.setDefaultConfig(vsanConfigSpec);
             enableSpec.setEnabled(true);
 
-            VimVsanReconfigSpec reconfigSpec = new VimVsanReconfigSpec();
+            var reconfigSpec = new VimVsanReconfigSpec();
             reconfigSpec.setIscsiSpec(enableSpec);
             reconfigSpec.setModify(true);
 
@@ -95,7 +96,10 @@ public class VsanIscsiSample {
                     clusterMoRef,
                     reconfigSpec);
 
-            if (!waitForVsanTask(vsanTask, "Enable vSAN iSCSI target service")) {
+            if (VsanUtil.waitForTasks(propertyCollectorHelper, vsanTask)) {
+                log.info("Enable vSAN iSCSI target service task completed with status: success");
+            } else {
+                log.error("Enable vSAN iSCSI target service task completed with status: failure");
                 return;
             }
 
@@ -107,7 +111,10 @@ public class VsanIscsiSample {
             vsanTask = healthPort.vsanVitAddIscsiTarget(
                     VsanManagedObjectsCatalog.getVsanVcIscsiTargetServiceInstanceReference(), clusterMoRef, targetSpec);
 
-            if (!waitForVsanTask(vsanTask, "Create vSAN iSCSI target")) {
+            if (VsanUtil.waitForTasks(propertyCollectorHelper, vsanTask)) {
+                log.info("Create vSAN iSCSI target service task completed with status: success");
+            } else {
+                log.error("Create vSAN iSCSI target service task completed with status: failure");
                 return;
             }
 
@@ -121,7 +128,10 @@ public class VsanIscsiSample {
                     targetAlias,
                     lunSpec);
 
-            if (!waitForVsanTask(vsanTask, "Create vSAN iSCSI LUN")) {
+            if (VsanUtil.waitForTasks(propertyCollectorHelper, vsanTask)) {
+                log.info("Create vSAN iSCSI LUN task completed with status: success");
+            } else {
+                log.error("Create vSAN iSCSI LUN task completed with status: failure");
                 return;
             }
 
@@ -131,7 +141,10 @@ public class VsanIscsiSample {
                     clusterMoRef,
                     targetAlias,
                     0);
-            if (!waitForVsanTask(vsanTask, "Remove vSAN iSCSI LUN")) {
+            if (VsanUtil.waitForTasks(propertyCollectorHelper, vsanTask)) {
+                log.info("Remove vSAN iSCSI LUN task completed with status: success");
+            } else {
+                log.error("Remove vSAN iSCSI LUN task completed with status: failure");
                 return;
             }
 
@@ -139,7 +152,10 @@ public class VsanIscsiSample {
                     VsanManagedObjectsCatalog.getVsanVcIscsiTargetServiceInstanceReference(),
                     clusterMoRef,
                     targetAlias);
-            if (!waitForVsanTask(vsanTask, "Remove vSAN iSCSI target")) {
+            if (VsanUtil.waitForTasks(propertyCollectorHelper, vsanTask)) {
+                log.info("Remove vSAN iSCSI target task completed with status: success");
+            } else {
+                log.error("Remove vSAN iSCSI target task completed with status: failure");
                 return;
             }
 
@@ -155,32 +171,12 @@ public class VsanIscsiSample {
                     clusterMoRef,
                     reconfigSpec);
 
-            waitForVsanTask(vsanTask, "Disable vSAN iSCSI target service");
+            var status = VsanUtil.waitForTasks(propertyCollectorHelper, vsanTask);
+            if (status) {
+                log.info("Disable vSAN iSCSI target service task completed with status: success");
+            } else {
+                log.error("Disable vSAN iSCSI target service task completed with status: failure");
+            }
         }
-    }
-
-    /**
-     * Get the VC cluster instance from the cluster name. It will try to search the cluster under all of VC data centers
-     * and return the first VC cluster matching the given name.
-     *
-     * @return The VC cluster instance. Return null if not found
-     */
-    private static ManagedObjectReference queryClusterByName(String clusterName) {
-        try {
-            return propertyCollectorHelper.getMoRefByName(clusterName, CLUSTER_COMPUTE_RESOURCE);
-        } catch (Exception e) {
-            log.error("Failed to get cluster with error.", e);
-        }
-        return null;
-    }
-
-    private static boolean waitForVsanTask(ManagedObjectReference vsanTask, String ops) {
-        Boolean status = VsanUtil.waitForTasks(propertyCollectorHelper, vsanTask);
-        if (status) {
-            log.info("{} task completed with status: success", ops);
-        } else {
-            log.error("{} task completed with status: failure", ops);
-        }
-        return status;
     }
 }

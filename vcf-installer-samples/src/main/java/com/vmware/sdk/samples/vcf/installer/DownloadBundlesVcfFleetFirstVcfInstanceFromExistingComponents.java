@@ -1,8 +1,9 @@
 /*
  * ******************************************************************
- * Copyright (c) 2025 Broadcom. All Rights Reserved.
- * The term "Broadcom" refers to Broadcom Inc.
+ * Copyright (c) 2025-2026 Broadcom. All Rights Reserved.
+ * Broadcom Confidential. The term "Broadcom" refers to Broadcom Inc.
  * and/or its subsidiaries.
+ * The term "Broadcom" refers to Broadcom Inc.
  *
  * SPDX-License-Identifier: Apache-2.0
  * ******************************************************************
@@ -30,7 +31,8 @@ import com.vmware.vapi.client.ApiClient;
 /**
  * Demonstrates how to configure online depot and download bundles necessary for deploying a new VCF Fleet with its
  * first VCF Instance, assuming that you already have vCenter and NSX deployed. This includes the following components:
- * VCF Operations Fleet Management, VCF Operations, VCF Operations Collector, VCF Automation, SDDC Manager.
+ * VCF Operations, VCF Operations Collector, VCF Automation, SDDC Manager, VIDB, VCF fleet lcm, SALT raas, SALT master,
+ * Telemetry acceptor,Fleet depot service, Fleet SDDC Lcm, VSP platform, VCF Operations, License server.
  */
 public class DownloadBundlesVcfFleetFirstVcfInstanceFromExistingComponents {
     private static final Logger log =
@@ -94,16 +96,35 @@ public class DownloadBundlesVcfFleetFirstVcfInstanceFromExistingComponents {
                     downloadLatestBundlesUtil.getLatestProductReleaseComponents(
                             "VCF",
                             versionWithoutBuildNumber,
-                            Set.of( // VCF Operations Fleet Management
-                                    "VRSLCM",
-                                    // VCF Operations
-                                    "VROPS",
-                                    // VCF Operations Collector
-                                    "VCF_OPS_CLOUD_PROXY",
-                                    // VCF Automation
-                                    "VRA",
-                                    // Components that comprise a VCF Instance in this scenario
-                                    "SDDC_MANAGER"));
+                            Set.of(
+				// VCF Services Platform
+                                "VSP",
+                                // VCF fleet lifecycle management
+                                "VCF_FLEET_LCM",
+                                // VCF fleet SDDC lifecycle management
+                                "VCF_SDDC_LCM",
+                                // SALT raas vmsp component
+                                "VCF_SALT_RAAS",
+                                // SALT master vmsp component
+                                "VCF_SALT",
+                                // Telemetry acceptor component
+                                "TELEMETRY_ACCEPTOR",
+                                // Fleet depot service component
+                                "DEPOT_SERVICE",
+                                // VCF Identity Broker component
+                                "VIDB",
+                                // Migration service engine
+                                "VCF_SERVICE_VCD_MIGRATION_BACKEND",
+                                // License server component
+                                "VCF_LICENSE_SERVER",
+                                // VCF Operations
+                                "VROPS",
+                                // VCF Operations Collector
+                                "VCF_OPS_CLOUD_PROXY",
+                                // VCF Automation
+                                "VRA",
+                                // Components that comprise a VCF Instance in this scenario
+                                "SDDC_MANAGER"));
             log.info("Retrieved product release components");
 
             List<String> bundleIdsBeingDownloaded =

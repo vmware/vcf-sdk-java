@@ -1,6 +1,6 @@
 /*
  * ******************************************************************
- * Copyright (c) 2025 Broadcom. All Rights Reserved.
+ * Copyright (c) 2026 Broadcom. All Rights Reserved.
  * The term "Broadcom" refers to Broadcom Inc.
  * and/or its subsidiaries.
  *
@@ -13,7 +13,9 @@ package com.vmware.sdk.samples.sddcm.tasks;
 /** Constants to define the task status. */
 public enum TaskStatus {
     PENDING("PENDING"),
+    QUEUED("Queued"),
     IN_PROGRESS("IN PROGRESS"),
+    ACTIVATING("Activating"),
     SUCCESSFUL("SUCCESSFUL"),
     FAILED("FAILED"),
     UNKNOWN("UNKNOWN"),

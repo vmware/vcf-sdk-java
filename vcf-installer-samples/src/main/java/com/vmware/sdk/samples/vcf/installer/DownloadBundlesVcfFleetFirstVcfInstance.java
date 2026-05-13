@@ -1,8 +1,9 @@
 /*
  * ******************************************************************
- * Copyright (c) 2025 Broadcom. All Rights Reserved.
- * The term "Broadcom" refers to Broadcom Inc.
+ * Copyright (c) 2025-2026 Broadcom. All Rights Reserved.
+ * Broadcom Confidential. The term "Broadcom" refers to Broadcom Inc.
  * and/or its subsidiaries.
+ * The term "Broadcom" refers to Broadcom Inc.
  *
  * SPDX-License-Identifier: Apache-2.0
  * ******************************************************************
@@ -29,8 +30,10 @@ import com.vmware.vapi.client.ApiClient;
 
 /**
  * Demonstrates how to configure online depot and download bundles necessary for deploying a new VCF Fleet with its
- * first VCF Instance. This includes the following components: VCF Operations Fleet Management, VCF Operations, VCF
- * Operations Collector, VCF Automation, vCenter, NSX, SDDC Manager.
+ * first VCF Instance. This includes the following components: VCF Operations, VCF
+ * Operations Collector, VCF Automation, vCenter, NSX, SDDC Manager, VSP platform, VCF fleet lifecycle management,
+ * VCF fleet SDDC lifecycle management, SALT raas vmsp component, SALT master vmsp component,
+ * Telemetry acceptor component, Fleet depot service component, VIDB component, License server component.
  */
 public class DownloadBundlesVcfFleetFirstVcfInstance {
     private static final Logger log = LoggerFactory.getLogger(DownloadBundlesVcfFleetFirstVcfInstance.class);
@@ -92,18 +95,37 @@ public class DownloadBundlesVcfFleetFirstVcfInstance {
                     downloadLatestBundlesUtil.getLatestProductReleaseComponents(
                             "VCF",
                             versionWithoutBuildNumber,
-                            Set.of( // VCF Operations Fleet Management
-                                    "VRSLCM",
-                                    // VCF Operations
-                                    "VROPS",
-                                    // VCF Operations Collector
-                                    "VCF_OPS_CLOUD_PROXY",
-                                    // VCF Automation
-                                    "VRA",
-                                    // Components that comprise a VCF Instance
-                                    "VCENTER",
-                                    "NSX_T_MANAGER",
-                                    "SDDC_MANAGER"));
+                            Set.of(
+                                // VCF Services Platform
+                                "VSP",
+                                // VCF fleet lifecycle management
+                                "VCF_FLEET_LCM",
+                                // VCF fleet SDDC lifecycle management
+                                "VCF_SDDC_LCM",
+                                // SALT raas vmsp component
+                                "VCF_SALT_RAAS",
+                                // SALT master vmsp component
+                                "VCF_SALT",
+                                // Telemetry acceptor component
+                                "TELEMETRY_ACCEPTOR",
+                                // Fleet depot service component
+                                "DEPOT_SERVICE",
+                                // VCF Identity Broker component
+                                "VIDB",
+                                // Migration service engine
+                                "VCF_SERVICE_VCD_MIGRATION_BACKEND",
+                                // License server component
+                                "VCF_LICENSE_SERVER",
+                                // VCF Operations
+                                "VROPS",
+                                // VCF Operations Collector
+                                "VCF_OPS_CLOUD_PROXY",
+                                // VCF Automation
+                                "VRA",
+                                // Components that comprise a VCF Instance
+                                "VCENTER",
+                                "NSX_T_MANAGER",
+                                "SDDC_MANAGER"));
             log.info("Retrieved product release components");
 
             List<String> bundleIdsBeingDownloaded =

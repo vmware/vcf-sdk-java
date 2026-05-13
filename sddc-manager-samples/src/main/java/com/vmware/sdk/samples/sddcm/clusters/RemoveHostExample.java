@@ -18,8 +18,8 @@ import org.slf4j.LoggerFactory;
 
 import com.vmware.sdk.samples.sddcm.constants.ResultStatus;
 import com.vmware.sdk.samples.sddcm.helpers.SddcManagerHelper;
+import com.vmware.sdk.samples.sddcm.helpers.SddcHelper;
 import com.vmware.sdk.samples.sddcm.tasks.TaskHelper;
-import com.vmware.sdk.samples.sddcm.utils.SddcUtil;
 import com.vmware.sdk.samples.utils.SampleCommandLineParser;
 import com.vmware.sdk.sddcm.model.ClusterCompactionSpec;
 import com.vmware.sdk.sddcm.model.ClusterUpdateSpec;
@@ -56,8 +56,8 @@ public class RemoveHostExample {
     public static void main(String[] args) {
         SampleCommandLineParser.load(RemoveHostExample.class, args);
 
-        try (SddcUtil.SddcFactory factory =
-                new SddcUtil.SddcFactory(sddcManagerHostname, sddcManagerSsoUserName, sddcManagerSsoPassword)) {
+        try (SddcHelper.SddcFactory factory =
+                new SddcHelper.SddcFactory(sddcManagerHostname, sddcManagerSsoUserName, sddcManagerSsoPassword)) {
             V1Factory v1Factory = factory.getV1Factory();
 
             // Create Cluster update Spec to remove host from the cluster

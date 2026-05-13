@@ -1,10 +1,5 @@
 This directory contains samples for managing vCenter signing certificate:
 
-The samples were tested against vSphere 7.0.3
-
-Author: Andrew Gormley <agormley@vmware.com>
-Date: 09/15/2021
-
 ### SigningCertificate Get operations
 
 | Sample                                                                            | Description                                                                                                                                               |

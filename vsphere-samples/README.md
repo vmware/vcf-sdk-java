@@ -1,1 +1,0 @@
-This folder contains vCenter samples from the former vSphere Automation SDK, vSphere Management SDK and vSAN Management SDK.

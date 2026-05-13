@@ -19,14 +19,17 @@ import java.util.List;
 
 import javax.net.ssl.SSLContext;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.conn.ssl.TrustAllStrategy;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpResponse;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.ssl.DefaultClientTlsStrategy;
+import org.apache.hc.client5.http.ssl.HostnameVerificationPolicy;
+import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
+import org.apache.hc.client5.http.ssl.TrustAllStrategy;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.ssl.SSLContextBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -160,7 +163,7 @@ public class ManageNativeKeyProviders {
         log.info("Backup request {}", request);
         try (CloseableHttpClient client = createHttpClient();
                 CloseableHttpResponse resp = client.execute(request)) {
-            int statusCode = resp.getStatusLine().getStatusCode();
+            int statusCode = resp.getCode();
             if (statusCode != 200) {
                 log.info("Backup failed. HTTP status code {}", statusCode);
                 throw new RuntimeException("Cannot backup");
@@ -186,8 +189,10 @@ public class ManageNativeKeyProviders {
                         .build();
 
                 return HttpClients.custom()
-                        .setSSLContext(sslCtx)
-                        .setSSLHostnameVerifier(NoopHostnameVerifier.INSTANCE)
+                        .setConnectionManager(PoolingHttpClientConnectionManagerBuilder.create()
+                                .setTlsSocketStrategy(new DefaultClientTlsStrategy(
+                                        sslCtx, HostnameVerificationPolicy.BOTH, NoopHostnameVerifier.INSTANCE))
+                                .build())
                         .build();
             } catch (Exception e) {
                 log.error("Cannot create trust all HTTP client", e);

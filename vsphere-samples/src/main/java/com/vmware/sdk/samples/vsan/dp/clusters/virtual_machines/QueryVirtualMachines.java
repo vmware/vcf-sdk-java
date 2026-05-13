@@ -1,6 +1,6 @@
 /*
  * ******************************************************************
- * Copyright (c) 2025 Broadcom. All Rights Reserved.
+ * Copyright (c) 2025-2026 Broadcom. All Rights Reserved.
  * The term "Broadcom" refers to Broadcom Inc.
  * and/or its subsidiaries.
  *
@@ -53,7 +53,7 @@ public class QueryVirtualMachines {
     /** REQUIRED: Cluster MoRef ID where the virtual machines locate. */
     public static String clusterId = "domain-c1";
     /** OPTIONAL: Virtual machine IDs to query. */
-    public static String vmIds = "vm-1";
+    public static String vmIds = null;
 
     public static void main(String[] args) {
         SampleCommandLineParser.load(QueryVirtualMachines.class, args);
@@ -67,7 +67,9 @@ public class QueryVirtualMachines {
                 snapServiceAddress, httpConfiguration, serverAddress, portConfigurer, username, password);
 
         VirtualMachinesTypes.FilterSpec filter = new VirtualMachinesTypes.FilterSpec();
-        filter.setVms(Arrays.stream(vmIds.split(",")).collect(Collectors.toSet()));
+        if (vmIds != null && !vmIds.isEmpty()) {
+            filter.setVms(Arrays.stream(vmIds.split(",")).collect(Collectors.toSet()));
+        }
         VirtualMachinesTypes.ListResult listResult = list(snapshotServiceClient, clusterId, filter);
         log.info(
                 "Virtual machine item size: {}, items: {}",

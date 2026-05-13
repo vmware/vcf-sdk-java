@@ -240,6 +240,7 @@ public class VchaClusterOps {
                     witnessHaIpIpv4Prefix,
                     witnessHaIpDefaultGateway,
                     witnessHaIpDnsServers == null ? List.of() : List.of(witnessHaIpDnsServers));
+
             // Spec for witness node placement
             PlacementSpec witnessPlacementSpec = SpecHelper.createPlacementSpec(
                     witnessPlacementName,
