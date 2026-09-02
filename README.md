@@ -64,7 +64,7 @@ The project is built on-top of [Maven](https://maven.apache.org/) 3.9 and uses M
 
 ### Java compatibility
 
-The SDK is compatible with the following Java LTS versions: 11, 17, 21 and 25.
+The SDK is compatible with the following Java LTS versions: 17, 21 and 25.
 It is **_strongly_** recommended to use one of those versions when integrating the SDK into custom applications and when running the samples.
 
 ### VCF component compatibility

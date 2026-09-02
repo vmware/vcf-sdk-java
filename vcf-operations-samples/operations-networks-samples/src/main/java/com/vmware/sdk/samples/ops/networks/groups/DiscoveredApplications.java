@@ -1,6 +1,6 @@
 /*
  * ******************************************************************
- * Copyright (c) 2025 Broadcom. All Rights Reserved.
+ * Copyright (c) 2025-2026 Broadcom. All Rights Reserved.
  * The term "Broadcom" refers to Broadcom Inc.
  * and/or its subsidiaries.
  *
@@ -56,7 +56,7 @@ import java.util.concurrent.ExecutionException;
  *   <li>VCF Operations for networks instance running and accessible
  *   <li>Valid credentials (username/password) with appropriate permissions
  *   <li>Network connectivity to the VCF Operations for networks host
- *   <li>Java 11 or later installed
+ *   <li>Java 17 or later installed
  *   <li>Network traffic data collection enabled in your environment (for FLOW_BASED_DISCOVERY)
  *   <li>ServiceNow integration configured (for SERVICE_NOW discovery type, optional)
  * </ul>
