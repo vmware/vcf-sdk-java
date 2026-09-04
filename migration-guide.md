@@ -142,7 +142,7 @@ From application-development perspective, there are 2 ways to declare dependenci
 
 The VCF SDK is an evolution of previously existing SDKs \- the various SDKs are unified and integrated under a single umbrella. For the most part they are compatible with previous versions, but still require some amount of adaptation in the pre-existing consuming application code.
 
-Different components of the VCF product have different APIs \- for example, the majority of the core vSphere stack exposes WSDL-based APIs. This is applicable for vCenter, STS, vSAN, SMS, PBM, VSLM and EAM. The maven artifacts contain automatically generated bindings which are compatible with Jakarta EE 9 (Jakarta XML Binding 3.0). The SDK-provided utility code is built on top of Apache CXF 4.0.
+Different components of the VCF product have different APIs \- for example, the majority of the core vSphere stack exposes WSDL-based APIs. This is applicable for vCenter, STS, vSAN, SMS, PBM, VSLM and EAM. The maven artifacts contain automatically generated bindings which are compatible with Jakarta EE 10 (Jakarta XML Binding 4.0). The SDK-provided utility code is built on top of Apache CXF 4.1.
 
 Additionally there are components (vCenter, SDDC Manager, VCF Installer) which have REST APIs, described with OpenAPI definitions. The SDK provides bindings, as well as utility code, for them as well.
 
@@ -155,7 +155,7 @@ The application’s build process has to be updated to one of the options below:
 * In case the build system has Internet access, it can download the SDK components from Maven Central  
 * For air-gapped build environments, the application developer has to download vcf-sdk-java.zip from Broadcom’s developer portal. The archive contains a top-level maven directory with the SDK-provided components. The application developer should incorporate it in the build system (e.g. by uploading the Maven artifacts to an internal mirror) and should also make sure that all direct and transitive dependencies, specified in the POM descriptor, are available at compile and run time.
 
-The VCF 9.1 SDK supports JDK 11, 17, 21 and 25\.
+The VCF 9.1 SDK supports JDK 17, 21 and 25\.
 
 Note 1: The SDK no longer provides \*-samples.jar(s). If the application code relied on such jars, it should be adapted to replace this dependency with the newly provided \*-utils alternatives e.g. **vsphere-utils**.
 

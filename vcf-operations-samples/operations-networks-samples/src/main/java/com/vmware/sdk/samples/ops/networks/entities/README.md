@@ -20,7 +20,7 @@ Before running these samples, ensure you have:
 1. **VCF Operations for networks** instance running and accessible
 2. **Valid credentials** (username/password) with appropriate permissions
 3. **Network connectivity** to the VCF Operations for networks host
-4. **Java 11 or later** installed
+4. **Java 17 or later** installed
 5. **Maven** for building and running the samples
 
 ## Common Parameters

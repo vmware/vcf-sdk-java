@@ -14,7 +14,7 @@ The Version sample shows how to:
 
 - VCF Operations for networks instance (hostname/IP address)
 - Valid credentials (username and password) - BOTH REQUIRED
-- Java 11 or later
+- Java 17 or later
 - Maven 3.6 or later
 
 ## Running the Sample

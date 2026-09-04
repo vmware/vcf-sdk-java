@@ -35,7 +35,7 @@ This workflow-based approach provides a comprehensive demonstration of the full 
 
 - VCF Operations for networks instance (hostname/IP address)
 - Valid credentials (username and password) - BOTH REQUIRED
-- Java 11 or later
+- Java 17 or later
 - Maven 3.6 or later
 
 ## Running the Sample
@@ -281,7 +281,7 @@ Unlike user-defined applications (see `Applications.java`), discovered applicati
 
 - VCF Operations for networks instance (hostname/IP address)
 - Valid credentials (username and password) - BOTH REQUIRED
-- Java 11 or later
+- Java 17 or later
 - Maven 3.6 or later
 - Network traffic data collection enabled in your environment (for FLOW_BASED_DISCOVERY)
 - ServiceNow integration configured (for SERVICE_NOW discovery type, optional)
@@ -518,7 +518,7 @@ Tiered Applications are applications that are organized into multiple tiers (e.g
 
 - VCF Operations for networks instance (hostname/IP address)
 - Valid credentials (username and password) - BOTH REQUIRED
-- Java 11 or later
+- Java 17 or later
 - Maven 3.6 or later
 
 ## Running the Sample
